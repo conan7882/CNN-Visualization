@@ -40,18 +40,20 @@ def get_config(FLAGS):
                  default_dirs = config)
 
 def get_predict_config(FLAGS):
-    dataset_test = MNISTLabel('train', config.data_dir, shuffle = False)
+    dataset_test = MNISTLabel('test', config.data_dir, shuffle = False)
     # dataset_test = ImageFromFile('.png', 
     #                             data_dir = config.data_dir, 
     #                             shuffle = False)
     prediction_list = [
-             PredictionMat('classmap', ['test']),
+             PredictionScalar(['pre_label'], ['label']),
+             PredictionMeanScalar('accuracy/result', 'test_accuracy'),
+             # PredictionMat('classmap', ['test']),
              PredictionImage(['classmap', 'image'], ['map', 'image'], merge_im = True, tanh = False)
              ]
 
     return PridectConfig(
                 dataflow = dataset_test,
-                model = model.mnistCAMTest(inspect_class = FLAGS.label),
+                model = model.mnistCAM(inspect_class = FLAGS.label),
                 model_name = 'model-87600',
                 predictions = prediction_list,
                 batch_size = FLAGS.batch_size,
