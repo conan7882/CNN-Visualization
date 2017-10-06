@@ -27,10 +27,10 @@ def get_config(FLAGS):
                                 num_channel = 1)
 
     inference_list = [InferScalars('accuracy/result', 'test_accuracy')]
-    infer_list = InferImages('classmap','image')
+    infer_list = InferImages('classmap/result','image', color = True)
     return TrainConfig(
                  dataflow = dataset_train, 
-                 model = model.mnistCAM(learning_rate = 0.01, inspect_class = FLAGS.label),
+                 model = model.mnistCAM(learning_rate = 0.001, inspect_class = FLAGS.label),
                  monitors = TFSummaryWriter(),
                  callbacks = [
                     ModelSaver(periodic = 100),
@@ -38,14 +38,14 @@ def get_config(FLAGS):
                     FeedInferenceBatch(dataset_val, periodic = 100, batch_count = 100, 
                                   # extra_cbs = TrainSummary(key = 'test'),
                                   inferencers = inference_list),
-                    # FeedInferenceBatch(dataset_test, periodic = 100, batch_count = 3, 
-                    #               # extra_cbs = TrainSummary(key = 'test'),
-                    #               inferencers = infer_list),
+                    FeedInference(dataset_test, periodic = 100,
+                                  infer_batch_size = 1, 
+                                  inferencers = infer_list),
                     CheckScalar(['accuracy/result','loss/result'], periodic = 100),
                   ],
                  batch_size = FLAGS.batch_size, 
-                 max_epoch = 50,
-                 summary_periodic = 10,
+                 max_epoch = 100,
+                 summary_periodic = 100,
                  default_dirs = config)
 
 def get_predict_config(FLAGS):
@@ -58,14 +58,14 @@ def get_predict_config(FLAGS):
     prediction_list = [
              # PredictionScalar(['pre_label'], ['label']),
              # PredictionMeanScalar('accuracy/result', 'test_accuracy'),
-             PredictionMat('classmap', ['test']),
-             PredictionImage(['classmap', 'image'], ['map', 'image'], merge_im = True)
+             PredictionMat('classmap/result', ['test']),
+             PredictionImage(['classmap/result', 'image'], ['map', 'image'], merge_im = True)
              ]
 
     return PridectConfig(
                 dataflow = dataset_test,
                 model = model.mnistCAM(inspect_class = FLAGS.label),
-                model_name = 'model-37200',
+                model_name = 'model-6000',
                 predictions = prediction_list,
                 batch_size = FLAGS.batch_size,
                 default_dirs = config)

@@ -6,8 +6,7 @@ import tensorflow as tf
 import tensorcv
 from tensorcv.models.layers import *
 from tensorcv.models.base import BaseModel
-
-from tensorcv.utils.common import deconv_size
+from tensorcv.algorithms.pretrained.VGG import VGG19
 
 class BaseCAM(BaseModel):
     """  """
@@ -32,17 +31,20 @@ class BaseCAM(BaseModel):
         self.set_model_input([self.image, self.keep_prob])
         self.set_dropout(self.keep_prob, keep_prob = 0.5)
         self.set_train_placeholder([self.image, self.label])
-        # self.set_prediction_placeholder([self.image, self.label])
-        self.set_prediction_placeholder(self.image)
+        self.set_prediction_placeholder([self.image, self.label])
+        # self.set_prediction_placeholder(self.image)
 
     def _create_conv(self, input_im):
         raise NotImplementedError()
 
     def _get_loss(self):
         with tf.name_scope('loss'):
-            return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits
-                    (logits = self.output, labels = self.label), 
-                    name = 'result') 
+            cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
+                logits = self.output, labels = self.label)
+            cross_entropy_loss = tf.reduce_mean(cross_entropy, 
+                                name = 'cross_entropy_loss') 
+            tf.add_to_collection('losses', cross_entropy_loss)
+            return tf.add_n(tf.get_collection('losses'), name = 'result')           
 
     def _get_optimizer(self):
         return tf.train.AdamOptimizer(beta1=0.5, learning_rate = self._learning_rate)
@@ -89,22 +91,20 @@ class BaseCAM(BaseModel):
         conv_resized = tf.reshape(conv_resized, [-1, o_height * o_width, conv_out_channel])
 
         classmap = tf.matmul(conv_resized, label_w)
-        classmap = tf.reshape(classmap, [-1, o_height, o_width, 1], name = 'classmap')
-        # Set negative value to be zero
-        # classmap = tf.reshape(tf.nn.relu(classmap), [-1, o_height, o_width, 1], name = 'classmap')
+        classmap = tf.reshape(classmap, [-1, o_height, o_width, 1], name = 'result')
 
 
 class mnistCAM(BaseCAM):
     """ for simple images like mnist """
-    def __init__(self, num_class = 10, 
-                 inspect_class = None,
-                 num_channels = 1, 
-                 learning_rate = 0.0001):
+    # def __init__(self, num_class = 10, 
+    #              inspect_class = None,
+    #              num_channels = 1, 
+    #              learning_rate = 0.0001):
 
-        super(mnistCAM, self).__init__(num_class = num_class, 
-                                       inspect_class = inspect_class,
-                                       num_channels = num_channels, 
-                                       learning_rate = learning_rate)
+        # super(mnistCAM, self).__init__(num_class = num_class, 
+        #                                inspect_class = inspect_class,
+        #                                num_channels = num_channels, 
+        #                                learning_rate = learning_rate)
 
     def _create_conv(self, input_im):
         conv1 = conv(input_im, 5, 32, 'conv1', nl = tf.nn.relu)
@@ -120,16 +120,20 @@ class mnistCAM(BaseCAM):
         input_im = self.model_input[0]
         keep_prob = self.model_input[1]
 
-        conv_out = self._create_conv(input_im)
+        conv_cam = self._create_conv(input_im)
         # conv_cam = conv(conv_out, 5, 128, 'conv_cam', nl = tf.nn.relu)
 
-        gap = global_avg_pool(conv_out)
+        gap = global_avg_pool(conv_cam)
         # dropout_gap = dropout(gap, keep_prob, self.is_training)
 
         with tf.variable_scope('fc1'):
-            fc_w = tf.get_variable('weights', shape= [gap.get_shape().as_list()[-1], self._num_class], 
-                      initializer=tf.random_normal_initializer(0., 0.01),
-                      regularizer = tf.contrib.layers.l2_regularizer(0.001))
+            # fc_w = tf.get_variable('weights', shape= [gap.get_shape().as_list()[-1], self._num_class], 
+            #           initializer=tf.random_normal_initializer(0., 0.01),
+            #           regularizer = tf.contrib.layers.l2_regularizer(0.001))
+            init = tf.truncated_normal_initializer(stddev = 0.01)
+            fc_w = new_weights('weights', 1,
+                [gap.get_shape().as_list()[-1], self._num_class], 
+                initializer = None, wd = 0.01)
             fc1 = tf.matmul(gap, fc_w, name = 'output')
 
         self.output = tf.identity(fc1, 'model_output') 
@@ -137,9 +141,58 @@ class mnistCAM(BaseCAM):
         self.prediction_pro = tf.nn.softmax(fc1, name = 'pre_pro')
 
         if self._inspect_class is not None:
-            self.get_classmap(self._inspect_class, conv_out, input_im) 
+            with tf.name_scope('classmap') as scope:
+                self.get_classmap(self._inspect_class, conv_cam, input_im) 
+
+class VGGCAM(BaseCAM):
+
+    VGG_MEAN = [103.939, 116.779, 123.68]
+
+    def _create_conv(self, input_im):
+
+        red, green, blue = tf.split(axis = 3, num_or_size_splits = 3, 
+                                    value = input_im)
+
+        input_bgr = tf.concat(axis=3, values=[
+            blue - VGG_MEAN[0],
+            green - VGG_MEAN[1],
+            red - VGG_MEAN[2],
+        ])
+
+        VGG = VGG19()
+        VGG.create_model([input_bgr, 1])
+
+        conv_cam = conv(VGG.conv_out, 3, 1024, 'conv_cam', nl = tf.nn.relu)
+        gap = global_avg_pool(conv_cam)
+
+        with tf.variable_scope('fc_cam'):
+            init = tf.truncated_normal_initializer(stddev = 0.01)
+            fc_w = new_weights('weights', 1,
+                [gap.get_shape().as_list()[-1], self._num_class], 
+                initializer = None, wd = 0.01)
+            fc_cam = tf.matmul(gap, fc_w, name = 'output')
+
+        self.output = tf.identity(fc_cam, 'model_output') 
+        self.prediction = tf.argmax(fc_cam, name = 'pre_label', axis = -1)
+        self.prediction_pro = tf.nn.softmax(fc_cam, name = 'pre_pro')
+
+        if self._inspect_class is not None:
+            self.get_classmap(self._inspect_class, conv_cam, input_bgr) 
 
 
+if __name__ == '__main__':
+    vgg_cam_model = VGGCAM(num_class = 256, 
+                           inspect_class = None,
+                           num_channels = 3, 
+                           learning_rate = 0.0001)
+    
+    vgg_cam_model.create_graph()
 
+    writer = tf.summary.FileWriter('E:\\GITHUB\\workspace\\CNN\\other\\')
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
+        writer.add_graph(sess.graph)
+
+    writer.close()
 
 
