@@ -20,19 +20,28 @@ import config
 def get_config(FLAGS):
     dataset_train = MNISTLabel('train', config.data_dir)
     dataset_val = MNISTLabel('val', config.data_dir)
+    dataset_test = ImageFromFile('.png', 
+                                data_dir = config.data_dir, 
+                                shuffle = False,
+                                normalize_fnc = normalize_one,
+                                num_channel = 1)
 
     inference_list = [InferScalars('accuracy/result', 'test_accuracy')]
+    infer_list = InferImages('classmap','image')
     return TrainConfig(
                  dataflow = dataset_train, 
-                 model = model.mnistCAM(learning_rate = 0.001),
+                 model = model.mnistCAM(learning_rate = 0.01, inspect_class = FLAGS.label),
                  monitors = TFSummaryWriter(),
                  callbacks = [
                     ModelSaver(periodic = 100),
                     TrainSummary(key = 'train', periodic = 10),
-                    FeedInferenceBatch(dataset_val, periodic = 50, batch_count = 100, 
+                    FeedInferenceBatch(dataset_val, periodic = 100, batch_count = 100, 
                                   # extra_cbs = TrainSummary(key = 'test'),
                                   inferencers = inference_list),
-                              CheckScalar(['accuracy/result','loss/result'], periodic = 10),
+                    # FeedInferenceBatch(dataset_test, periodic = 100, batch_count = 3, 
+                    #               # extra_cbs = TrainSummary(key = 'test'),
+                    #               inferencers = infer_list),
+                    CheckScalar(['accuracy/result','loss/result'], periodic = 100),
                   ],
                  batch_size = FLAGS.batch_size, 
                  max_epoch = 50,
@@ -40,21 +49,23 @@ def get_config(FLAGS):
                  default_dirs = config)
 
 def get_predict_config(FLAGS):
-    dataset_test = MNISTLabel('test', config.data_dir, shuffle = False)
-    # dataset_test = ImageFromFile('.png', 
-    #                             data_dir = config.data_dir, 
-    #                             shuffle = False)
+    # dataset_test = MNISTLabel('test', config.data_dir, shuffle = False)
+    dataset_test = ImageFromFile('.png', 
+                                data_dir = config.data_dir, 
+                                shuffle = False,
+                                normalize_fnc = normalize_one,
+                                num_channel = 1)
     prediction_list = [
-             PredictionScalar(['pre_label'], ['label']),
-             PredictionMeanScalar('accuracy/result', 'test_accuracy'),
-             # PredictionMat('classmap', ['test']),
-             PredictionImage(['classmap', 'image'], ['map', 'image'], merge_im = True, tanh = False)
+             # PredictionScalar(['pre_label'], ['label']),
+             # PredictionMeanScalar('accuracy/result', 'test_accuracy'),
+             PredictionMat('classmap', ['test']),
+             PredictionImage(['classmap', 'image'], ['map', 'image'], merge_im = True)
              ]
 
     return PridectConfig(
                 dataflow = dataset_test,
                 model = model.mnistCAM(inspect_class = FLAGS.label),
-                model_name = 'model-87600',
+                model_name = 'model-37200',
                 predictions = prediction_list,
                 batch_size = FLAGS.batch_size,
                 default_dirs = config)

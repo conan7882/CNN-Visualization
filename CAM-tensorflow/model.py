@@ -9,19 +9,16 @@ from tensorcv.models.base import BaseModel
 
 from tensorcv.utils.common import deconv_size
 
-class mnistCAM(BaseModel):
-    """ training model """
+class BaseCAM(BaseModel):
+    """  """
     def __init__(self, num_class = 10, 
                  inspect_class = None,
                  num_channels = 1, 
-                 im_height = 28, im_width = 28,
                  learning_rate = 0.0001):
 
-        self.learning_rate = learning_rate
-        self.num_channels = num_channels
-        self.im_height = im_height
-        self.im_width = im_width
-        self.num_class = num_class
+        self._learning_rate = learning_rate
+        self._num_channels = num_channels
+        self._num_class = num_class
         self._inspect_class = inspect_class
 
         self.set_is_training(True)
@@ -29,46 +26,17 @@ class mnistCAM(BaseModel):
     def _create_input(self):
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
         self.image = tf.placeholder(tf.float32, name = 'image',
-                            shape = [None, self.im_height, self.im_width, self.num_channels])
+                            shape = [None, None, None, self._num_channels])
         self.label = tf.placeholder(tf.int64, [None], 'label')
-        # self.label = tf.placeholder(tf.int64, [None, self.num_class], 'label')
 
         self.set_model_input([self.image, self.keep_prob])
         self.set_dropout(self.keep_prob, keep_prob = 0.5)
         self.set_train_placeholder([self.image, self.label])
-        self.set_prediction_placeholder([self.image, self.label])
-        # self.set_prediction_placeholder(self.image)
+        # self.set_prediction_placeholder([self.image, self.label])
+        self.set_prediction_placeholder(self.image)
 
     def _create_conv(self, input_im):
-        conv1 = conv(input_im, 5, 32, 'conv1', nl = tf.nn.relu)
-        pool1 = max_pool(conv1, 'pool1', padding = 'VALID')
-
-        conv2 = conv(pool1, 5, 64, 'conv2', nl = tf.nn.relu)
-        pool2 = max_pool(conv2, 'pool2', padding = 'VALID')
-
-        return pool2
-
-    def _create_model(self):
-
-        input_im = self.model_input[0]
-        keep_prob = self.model_input[1]
-
-        conv_out = self._create_conv(input_im)
-        # conv_cam = conv(conv_out, 5, 128, 'conv_cam', nl = tf.nn.relu)
-
-        gap = global_avg_pool(conv_out)
-        # dropout_gap = dropout(gap, keep_prob, self.is_training)
-
-        with tf.variable_scope('fc1'):
-            fc_w = tf.get_variable('weights', shape=[64, self.num_class], initializer=tf.random_normal_initializer(0., 0.01))
-            fc1 = tf.matmul(gap, fc_w, name = 'output')
-
-        self.output = tf.identity(fc1, 'model_output') 
-        self.prediction = tf.argmax(fc1, name = 'pre_label', axis = -1)
-        self.prediction_pro = tf.nn.softmax(fc1, name = 'pre_pro')
-
-        if self._inspect_class is not None:
-            self.get_classmap(self._inspect_class, conv_out, input_im) 
+        raise NotImplementedError()
 
     def _get_loss(self):
         with tf.name_scope('loss'):
@@ -77,7 +45,7 @@ class mnistCAM(BaseModel):
                     name = 'result') 
 
     def _get_optimizer(self):
-        return tf.train.AdamOptimizer(beta1=0.5, learning_rate = self.learning_rate)
+        return tf.train.AdamOptimizer(beta1=0.5, learning_rate = self._learning_rate)
 
     def _ex_setup_graph(self):
         with tf.name_scope('accuracy'):
@@ -125,22 +93,27 @@ class mnistCAM(BaseModel):
         # Set negative value to be zero
         # classmap = tf.reshape(tf.nn.relu(classmap), [-1, o_height, o_width, 1], name = 'classmap')
 
-class mnistCAMTest(mnistCAM):
-    def _ex_setup_graph(self):
-        pass
 
-    def _create_input(self):
-        self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
-        self.image = tf.placeholder(tf.float32, name = 'image',
-                            shape = [None, None, None, self.num_channels])
-        self.label = tf.placeholder(tf.int64, [None], 'label')
-        # self.label = tf.placeholder(tf.int64, [None, self.num_class], 'label')
+class mnistCAM(BaseCAM):
+    """ for simple images like mnist """
+    def __init__(self, num_class = 10, 
+                 inspect_class = None,
+                 num_channels = 1, 
+                 learning_rate = 0.0001):
 
-        self.set_model_input([self.image, self.keep_prob])
-        self.set_dropout(self.keep_prob, keep_prob = 0.5)
-        self.set_train_placeholder([self.image, self.label])
-        # self.set_prediction_placeholder([self.image, self.label])
-        self.set_prediction_placeholder(self.image)
+        super(mnistCAM, self).__init__(num_class = num_class, 
+                                       inspect_class = inspect_class,
+                                       num_channels = num_channels, 
+                                       learning_rate = learning_rate)
+
+    def _create_conv(self, input_im):
+        conv1 = conv(input_im, 5, 32, 'conv1', nl = tf.nn.relu)
+        pool1 = max_pool(conv1, 'pool1', padding = 'VALID')
+
+        conv2 = conv(pool1, 5, 64, 'conv2', nl = tf.nn.relu)
+        pool2 = max_pool(conv2, 'pool2', padding = 'VALID')
+
+        return pool2
 
     def _create_model(self):
 
@@ -148,13 +121,15 @@ class mnistCAMTest(mnistCAM):
         keep_prob = self.model_input[1]
 
         conv_out = self._create_conv(input_im)
-        # conv_cam = conv(conv_out, 5, 128, 'conv3', nl = tf.nn.relu)
+        # conv_cam = conv(conv_out, 5, 128, 'conv_cam', nl = tf.nn.relu)
 
         gap = global_avg_pool(conv_out)
         # dropout_gap = dropout(gap, keep_prob, self.is_training)
 
         with tf.variable_scope('fc1'):
-            fc_w = tf.get_variable('weights', shape=[64, self.num_class], initializer=tf.random_normal_initializer(0., 0.01))
+            fc_w = tf.get_variable('weights', shape= [gap.get_shape().as_list()[-1], self._num_class], 
+                      initializer=tf.random_normal_initializer(0., 0.01),
+                      regularizer = tf.contrib.layers.l2_regularizer(0.001))
             fc1 = tf.matmul(gap, fc_w, name = 'output')
 
         self.output = tf.identity(fc1, 'model_output') 
@@ -163,6 +138,7 @@ class mnistCAMTest(mnistCAM):
 
         if self._inspect_class is not None:
             self.get_classmap(self._inspect_class, conv_out, input_im) 
+
 
 
 
