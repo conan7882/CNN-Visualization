@@ -6,7 +6,8 @@ import tensorflow as tf
 import tensorcv
 from tensorcv.models.layers import *
 from tensorcv.models.base import BaseModel
-from tensorcv.algorithms.pretrained.VGG import VGG19
+from tensorcv.dataflow.image import *
+# from tensorcv.algorithms.pretrained.VGG import VGG19_FCN
 
 class BaseCAM(BaseModel):
     """  """
@@ -82,7 +83,7 @@ class BaseCAM(BaseModel):
         conv_resized = tf.image.resize_bilinear(conv_out, [o_height, o_width])
 
         # Get weights corresponding to class = label
-        with tf.variable_scope('fc1') as scope:
+        with tf.variable_scope('fc_cam') as scope:
             scope.reuse_variables()
             label_w = tf.gather(tf.transpose(tf.get_variable('weights')), label)
             label_w = tf.reshape(label_w, [-1, conv_out_channel, 1]) 
@@ -126,7 +127,7 @@ class mnistCAM(BaseCAM):
         gap = global_avg_pool(conv_cam)
         # dropout_gap = dropout(gap, keep_prob, self.is_training)
 
-        with tf.variable_scope('fc1'):
+        with tf.variable_scope('fc_cam'):
             # fc_w = tf.get_variable('weights', shape= [gap.get_shape().as_list()[-1], self._num_class], 
             #           initializer=tf.random_normal_initializer(0., 0.01),
             #           regularizer = tf.contrib.layers.l2_regularizer(0.001))
@@ -145,32 +146,84 @@ class mnistCAM(BaseCAM):
                 self.get_classmap(self._inspect_class, conv_cam, input_im) 
 
 class VGGCAM(BaseCAM):
+    def __init__(self, num_class = 1000, 
+                 inspect_class = None,
+                 num_channels = 3, 
+                 learning_rate = 0.0001,
+                 is_load = True,
+                 pre_train_path = None):
 
-    VGG_MEAN = [103.939, 116.779, 123.68]
+        self._is_load = is_load
+        if self._is_load and pre_train_path is None:
+            raise ValueError('pre_train_path can not be None!')
+        self._pre_train_path = pre_train_path
 
+        super(VGGCAM, self).__init__(num_class = num_class, 
+                                       inspect_class = inspect_class,
+                                       num_channels = num_channels, 
+                                       learning_rate = learning_rate)
     def _create_conv(self, input_im):
+
+        VGG_MEAN = [103.939, 116.779, 123.68]
 
         red, green, blue = tf.split(axis = 3, num_or_size_splits = 3, 
                                     value = input_im)
-
         input_bgr = tf.concat(axis=3, values=[
             blue - VGG_MEAN[0],
             green - VGG_MEAN[1],
             red - VGG_MEAN[2],
         ])
 
-        VGG = VGG19()
-        VGG.create_model([input_bgr, 1])
+        data_dict = {}
+        if self._is_load:
+            # model_path = 'D:\\Qian\\GitHub\\workspace\\VGG\\vgg19.npy'
+            data_dict = np.load(self._pre_train_path, encoding='latin1').item()
 
-        conv_cam = conv(VGG.conv_out, 3, 1024, 'conv_cam', nl = tf.nn.relu)
+        arg_scope = tf.contrib.framework.arg_scope
+        with arg_scope([conv], nl = tf.nn.relu, trainable = False, data_dict = data_dict):
+            conv1_1 = conv(input_im, 3, 64, 'conv1_1')
+            conv1_2 = conv(conv1_1, 3, 64, 'conv1_2')
+            pool1 = max_pool(conv1_2, 'pool1', padding = 'SAME')
+
+            conv2_1 = conv(pool1, 3, 128, 'conv2_1')
+            conv2_2 = conv(conv2_1, 3, 128, 'conv2_2')
+            pool2 = max_pool(conv2_2, 'pool2', padding = 'SAME')
+
+            conv3_1 = conv(pool2, 3, 256, 'conv3_1')
+            conv3_2 = conv(conv3_1, 3, 256, 'conv3_2')
+            conv3_3 = conv(conv3_2, 3, 256, 'conv3_3')
+            conv3_4 = conv(conv3_3, 3, 256, 'conv3_4')
+            pool3 = max_pool(conv3_4, 'pool3', padding = 'SAME')
+
+            conv4_1 = conv(pool3, 3, 512, 'conv4_1')
+            conv4_2 = conv(conv4_1, 3, 512, 'conv4_2')
+            conv4_3 = conv(conv4_2, 3, 512, 'conv4_3')
+            conv4_4 = conv(conv4_3, 3, 512, 'conv4_4')
+            pool4 = max_pool(conv4_4, 'pool4', padding = 'SAME')
+
+            conv5_1 = conv(pool4, 3, 512, 'conv5_1')
+            conv5_2 = conv(conv5_1, 3, 512, 'conv5_2')
+            conv5_3 = conv(conv5_2, 3, 512, 'conv5_3')
+
+        return conv5_3
+
+    def _create_model(self):
+
+        input_im = self.model_input[0]
+        keep_prob = self.model_input[1]
+        
+        conv_out = self._create_conv(input_im)
+
+        conv_cam = conv(conv_out, 3, 1024, 'conv_cam', nl = tf.nn.relu)
         gap = global_avg_pool(conv_cam)
+        dropout_gap = dropout(gap, keep_prob, self.is_training)
 
         with tf.variable_scope('fc_cam'):
             init = tf.truncated_normal_initializer(stddev = 0.01)
             fc_w = new_weights('weights', 1,
                 [gap.get_shape().as_list()[-1], self._num_class], 
                 initializer = None, wd = 0.01)
-            fc_cam = tf.matmul(gap, fc_w, name = 'output')
+            fc_cam = tf.matmul(dropout_gap, fc_w, name = 'output')
 
         self.output = tf.identity(fc_cam, 'model_output') 
         self.prediction = tf.argmax(fc_cam, name = 'pre_label', axis = -1)
@@ -181,18 +234,85 @@ class VGGCAM(BaseCAM):
 
 
 if __name__ == '__main__':
-    vgg_cam_model = VGGCAM(num_class = 256, 
+    num_class = 257
+    num_channels = 3
+    batch_size = 1
+
+
+    vgg_cam_model = VGGCAM(num_class = num_class, 
                            inspect_class = None,
-                           num_channels = 3, 
-                           learning_rate = 0.0001)
+                           num_channels = num_channels, 
+                           learning_rate = 0.0001,
+                           is_load = True,
+                           pre_train_path = 'E:\\GITHUB\\workspace\\CNN\pretrained\\vgg19.npy')
+    
+
+    data_train = ImageLabelFromFolder('.jpg', data_dir = 'E:\\GITHUB\\workspace\\CNN\\dataset\\256_ObjectCategories\\256_ObjectCategories\\', 
+                        num_channel = num_channels,
+                        label_dict = None, num_class = num_class,
+                        one_hot = False,
+                        shuffle = True,
+                        reshape = 224)
+    data_train.set_batch_size(batch_size)
+    
+    # print((data_train.next_batch()).shape)
     
     vgg_cam_model.create_graph()
+    im_plh, label_plh = vgg_cam_model.get_train_placeholder()[0],\
+                          vgg_cam_model.get_train_placeholder()[1] 
+
+    # tf.image.resize_images(tf.cast(image, tf.float32), 
+        # [tf.cast(new_height, tf.int32), tf.cast(new_width, tf.int32)])
+
+    grads = vgg_cam_model.get_grads()
+    opt = vgg_cam_model.get_optimizer()
+    train_op = opt.apply_gradients(grads, name = 'train')
+
+    summary_list = tf.summary.merge_all('default')
 
     writer = tf.summary.FileWriter('E:\\GITHUB\\workspace\\CNN\\other\\')
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         writer.add_graph(sess.graph)
 
+        batch_data = data_train.next_batch()
+        sess.run(train_op, feed_dict = {im_plh: batch_data[0], label_plh: batch_data[1], vgg_cam_model.keep_prob:0.5})
     writer.close()
 
+    # print(tf.trainable_variables())
+    # # optimizer = vgg_cam_model.get_optimizer()
+    # # loss = vgg_cam_model.get_loss()
+    # # grads = optimizer.compute_gradients(loss)
+    # # grads = vgg_cam_model.get_grads()
+    # # opt = vgg_cam_model.get_optimizer()
+    # # train_op = opt.apply_gradients(grads, name = 'train')
+
+
+
+    # writer = tf.summary.FileWriter('D:\\Qian\\GitHub\\workspace\\test\\')
+    # with tf.Session() as sess:
+    #     # sess.run(tf.global_variables_initializer())
+    #     writer.add_graph(sess.graph)
+
+    # writer.close()
+
+
+# def overlay(img, heatmap, cmap='jet', alpha=0.5):
+
+#     if isinstance(img, np.ndarray):
+#         img = Image.fromarray(img)
+
+#     if isinstance(heatmap, np.ndarray):
+#         colorize = plt.get_cmap(cmap)
+#         # Normalize
+#         heatmap = heatmap - np.min(heatmap)
+#         heatmap = heatmap / np.max(heatmap)
+#         heatmap = colorize(heatmap, bytes=True)
+#         heatmap = Image.fromarray(heatmap[:, :, :3], mode='RGB')
+
+#     # Resize the heatmap to cover whole img
+#     heatmap = heatmap.resize((img.size[0], img.size[1]), resample=Image.BILINEAR)
+#     # Display final overlayed output
+#     result = Image.blend(img, heatmap, alpha)
+#     return result
 

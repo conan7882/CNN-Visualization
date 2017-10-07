@@ -65,7 +65,7 @@ def get_predict_config(FLAGS):
     return PridectConfig(
                 dataflow = dataset_test,
                 model = model.mnistCAM(inspect_class = FLAGS.label),
-                model_name = 'model-6000',
+                model_name = 'model-28300',
                 predictions = prediction_list,
                 batch_size = FLAGS.batch_size,
                 default_dirs = config)
