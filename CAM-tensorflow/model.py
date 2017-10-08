@@ -10,7 +10,7 @@ from tensorcv.dataflow.image import *
 # from tensorcv.algorithms.pretrained.VGG import VGG19_FCN
 
 class BaseCAM(BaseModel):
-    """  """
+    """ base of class activation map class """
     def __init__(self, num_class = 10, 
                  inspect_class = None,
                  num_channels = 1, 
@@ -33,7 +33,6 @@ class BaseCAM(BaseModel):
         self.set_dropout(self.keep_prob, keep_prob = 0.5)
         self.set_train_placeholder([self.image, self.label])
         self.set_prediction_placeholder([self.image, self.label])
-        # self.set_prediction_placeholder(self.image)
 
     def _create_conv(self, input_im):
         raise NotImplementedError()
@@ -76,11 +75,10 @@ class BaseCAM(BaseModel):
         o_height = tf.shape(input_im)[1]
         o_width = tf.shape(input_im)[2]
         
-        # Get number of channels of output of convolution layers
+        # Get shape of output of convolution layers
         conv_out_channel = tf.shape(conv_out)[-1]
-
-        # Interpolate to orginal size
-        conv_resized = tf.image.resize_bilinear(conv_out, [o_height, o_width])
+        conv_height = tf.shape(conv_out)[1]
+        conv_width = tf.shape(conv_out)[2]
 
         # Get weights corresponding to class = label
         with tf.variable_scope('fc_cam') as scope:
@@ -89,23 +87,16 @@ class BaseCAM(BaseModel):
             label_w = tf.reshape(label_w, [-1, conv_out_channel, 1]) 
             label_w = tf.tile(label_w, [tf.shape(conv_out)[0], 1, 1])
 
-        conv_resized = tf.reshape(conv_resized, [-1, o_height * o_width, conv_out_channel])
+        conv_reshape = tf.reshape(conv_out, [-1, conv_height * conv_width, conv_out_channel])
+        classmap = tf.matmul(conv_reshape, label_w)
 
-        classmap = tf.matmul(conv_resized, label_w)
-        classmap = tf.reshape(classmap, [-1, o_height, o_width, 1], name = 'result')
+        # Interpolate to orginal size
+        classmap = tf.reshape(classmap, [-1, conv_height, conv_width, 1])
+        classmap = tf.image.resize_bilinear(classmap, [o_height, o_width], name = 'result')
 
 
 class mnistCAM(BaseCAM):
     """ for simple images like mnist """
-    # def __init__(self, num_class = 10, 
-    #              inspect_class = None,
-    #              num_channels = 1, 
-    #              learning_rate = 0.0001):
-
-        # super(mnistCAM, self).__init__(num_class = num_class, 
-        #                                inspect_class = inspect_class,
-        #                                num_channels = num_channels, 
-        #                                learning_rate = learning_rate)
 
     def _create_conv(self, input_im):
         conv1 = conv(input_im, 5, 32, 'conv1', nl = tf.nn.relu)
@@ -128,9 +119,6 @@ class mnistCAM(BaseCAM):
         # dropout_gap = dropout(gap, keep_prob, self.is_training)
 
         with tf.variable_scope('fc_cam'):
-            # fc_w = tf.get_variable('weights', shape= [gap.get_shape().as_list()[-1], self._num_class], 
-            #           initializer=tf.random_normal_initializer(0., 0.01),
-            #           regularizer = tf.contrib.layers.l2_regularizer(0.001))
             init = tf.truncated_normal_initializer(stddev = 0.01)
             fc_w = new_weights('weights', 1,
                 [gap.get_shape().as_list()[-1], self._num_class], 
@@ -176,7 +164,6 @@ class VGGCAM(BaseCAM):
 
         data_dict = {}
         if self._is_load:
-            # model_path = 'D:\\Qian\\GitHub\\workspace\\VGG\\vgg19.npy'
             data_dict = np.load(self._pre_train_path, encoding='latin1').item()
 
         arg_scope = tf.contrib.framework.arg_scope
@@ -214,7 +201,7 @@ class VGGCAM(BaseCAM):
         
         conv_out = self._create_conv(input_im)
 
-        conv_cam = conv(conv_out, 3, 1024, 'conv_cam', nl = tf.nn.relu)
+        conv_cam = conv(conv_out, 3, 1024, 'conv_cam', nl = tf.nn.relu, wd = 0.01)
         gap = global_avg_pool(conv_cam)
         dropout_gap = dropout(gap, keep_prob, self.is_training)
 
@@ -230,14 +217,13 @@ class VGGCAM(BaseCAM):
         self.prediction_pro = tf.nn.softmax(fc_cam, name = 'pre_pro')
 
         if self._inspect_class is not None:
-            self.get_classmap(self._inspect_class, conv_cam, input_bgr) 
+            with tf.name_scope('classmap') as scope:
+                self.get_classmap(self._inspect_class, conv_cam, input_im) 
 
 
 if __name__ == '__main__':
     num_class = 257
     num_channels = 3
-    batch_size = 1
-
 
     vgg_cam_model = VGGCAM(num_class = num_class, 
                            inspect_class = None,
@@ -245,38 +231,17 @@ if __name__ == '__main__':
                            learning_rate = 0.0001,
                            is_load = True,
                            pre_train_path = 'E:\\GITHUB\\workspace\\CNN\pretrained\\vgg19.npy')
-    
-
-    data_train = ImageLabelFromFolder('.jpg', data_dir = 'E:\\GITHUB\\workspace\\CNN\\dataset\\256_ObjectCategories\\256_ObjectCategories\\', 
-                        num_channel = num_channels,
-                        label_dict = None, num_class = num_class,
-                        one_hot = False,
-                        shuffle = True,
-                        reshape = 224)
-    data_train.set_batch_size(batch_size)
-    
-    # print((data_train.next_batch()).shape)
-    
+            
     vgg_cam_model.create_graph()
-    im_plh, label_plh = vgg_cam_model.get_train_placeholder()[0],\
-                          vgg_cam_model.get_train_placeholder()[1] 
-
-    # tf.image.resize_images(tf.cast(image, tf.float32), 
-        # [tf.cast(new_height, tf.int32), tf.cast(new_width, tf.int32)])
 
     grads = vgg_cam_model.get_grads()
     opt = vgg_cam_model.get_optimizer()
     train_op = opt.apply_gradients(grads, name = 'train')
 
-    summary_list = tf.summary.merge_all('default')
-
     writer = tf.summary.FileWriter('E:\\GITHUB\\workspace\\CNN\\other\\')
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         writer.add_graph(sess.graph)
-
-        batch_data = data_train.next_batch()
-        sess.run(train_op, feed_dict = {im_plh: batch_data[0], label_plh: batch_data[1], vgg_cam_model.keep_prob:0.5})
     writer.close()
 
     # print(tf.trainable_variables())

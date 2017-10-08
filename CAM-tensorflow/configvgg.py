@@ -1,6 +1,8 @@
 # File: config.py
 # Author: Qian Ge <geqian1001@gmail.com>
 
+vgg_dir = 'E:\\GITHUB\\workspace\\CNN\\pretrained\\vgg19.npy'
+
 # directory of training data
 # data_dir = 'D:\\GoogleDrive_Qian\\Foram\\Training\\CNN_GAN_ORIGINAL_64\\'
 data_dir = 'E:\\GITHUB\\workspace\\CNN\\dataset\\256_ObjectCategories\\256_ObjectCategories\\'
