@@ -50,7 +50,7 @@ Class activation map of same image for different classes
        
          *`config.data_dir`* - directory of training image data
        
-         *`config.infer_data_dir`* - directory of the image use for inference class activation map during training (put only one imge)
+         *`config.infer_data_dir`* - directory of the image use for inference class activation map during training (put only one image)
        
          *`config.checkpoint_dir`* - directory of saving trained model (saved every 100 training steps)
        
