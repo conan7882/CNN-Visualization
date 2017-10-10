@@ -91,7 +91,7 @@ Download the pre-trained parameters VGG19 NPY [here](https://github.com/machrisa
 
 1. Put training image in *`config.data_dir`*. Image of different classes are in different folders. Uncomment *`print(dataset_train.label_dict)`* to check the image class label and the corresponding label index for training and testing. 
 
- **May not work well on low resolution images, since all the images will be rescale to 224 x 224 for training.**
+   **May not work well on low resolution images, since all the images will be rescale to 224 x 224 for training.**
 
 2. Then run:
 
@@ -103,7 +103,7 @@ Download the pre-trained parameters VGG19 NPY [here](https://github.com/machrisa
 	    
 - #### Generate the class activation map using trained parameters
 
-1. Put testing image in *`config.test_data_dir`*. 
+1. Put testing images in *`config.test_data_dir`*. 
 2. Then run:
 
 ```	  
@@ -116,7 +116,7 @@ Download the pre-trained parameters VGG19 NPY [here](https://github.com/machrisa
 
 - If batch size is greater than 1, the result images of one mini batch will be save as one image.  
 
-**Batch size has to be one if the testing images have different size.** Or you can resize the images to 224 x 224 by uncomment *`resize = 224,`* (line 81). Please refer to the code comments for more detailed parameters setting.  
+- **Batch size has to be one if the testing images have different size.** Or you can resize the images to 224 x 224 by uncomment *`resize = 224,`* (line 81). Please refer to the code comments for more detailed parameters setting.  
 
 
 
