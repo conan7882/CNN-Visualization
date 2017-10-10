@@ -40,6 +40,8 @@ Class activation map for class duck and people after 25 epochs
 Class activation map of same image for different classes
 ![celtech_change](figs/celtech_diff.png)
 
+## Observations
+
 ## Preparation
 
 1. Setup directories in file *configvgg.py*. 
@@ -105,7 +107,7 @@ Dataset requirement:
  
   2. The images have to be color images with 3 channels.
  
-  3. May not work well on low resolution images, since all the images will be rescale to 224 x 224 for training.
+  3. May not work well on low resolution images, since all the images will be rescaled to 224 x 224 for training.
  
  
 Finetuning pre-trained VGG19 for your own dataset:
