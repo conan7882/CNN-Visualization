@@ -46,25 +46,25 @@ Class activation map of same image for different classes
   
       - Training
   
-     *`config.vgg_dir`* - directory of pre-trained VGG19 parameters
+         *`config.vgg_dir`* - directory of pre-trained VGG19 parameters
        
-     *`config.data_dir`* - directory of training image data
+         *`config.data_dir`* - directory of training image data
        
-     *`config.infer_data_dir`* - directory of the image use for inference class activation map during training (put only one imge)
+         *`config.infer_data_dir`* - directory of the image use for inference class activation map during training (put only one imge)
        
-     *`config.checkpoint_dir`* - directory of saving trained model (saved every 100 training steps)
+         *`config.checkpoint_dir`* - directory of saving trained model (saved every 100 training steps)
        
-     *`config.summary_dir`* - directory of saving summaries (saved every 10 training steps)
+         *`config.summary_dir`* - directory of saving summaries (saved every 10 training steps)
        
-     *`config.infer_dir`* - directory of saving inference result (saved every 100 training steps)
+         *`config.infer_dir`* - directory of saving inference result (saved every 100 training steps)
        
       - Testing
       
-     *`config.model_dir`* - directory of trained model parameters
+         *`config.model_dir`* - directory of trained model parameters
      
-     *`config.test_data_dir`* - directory of testing images
+         *`config.test_data_dir`* - directory of testing images
        
-     *`config.result_dir`* - directory of saving testing images
+         *`config.result_dir`* - directory of saving testing images
        
 2. Download dataset and pre-trained VGG parameters
  
