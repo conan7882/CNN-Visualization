@@ -42,7 +42,7 @@ Class activation map of same image for different classes
 
 ## Preparation
 
-### Setup directories in file *configvgg.py*. 
+1. Setup directories in file *configvgg.py*. 
   
   - Training
   
@@ -61,12 +61,12 @@ Class activation map of same image for different classes
   - Testing
       
      *`config.model_dir`* - directory of trained model parameters
-       
+     
      *`config.test_data_dir`* - directory of testing images
        
      *`config.result_dir`* - directory of saving testing images
        
-### Download dataset and pre-trained VGG parameters
+2. Download dataset and pre-trained VGG parameters
  
 - Download [Caltech-256](http://www.vision.caltech.edu/Image_Datasets/Caltech256/) dataset and put it in *`config.data_dir`*
        
