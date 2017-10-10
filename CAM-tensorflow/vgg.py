@@ -15,12 +15,14 @@ from tensorcv.predicts import *
 from CAM import VGGCAM
 import configvgg as config_path
 
+NUM_CHANNEL = 3
+
 def get_config(FLAGS):
     # data for training
     dataset_train = ImageLabelFromFolder(FLAGS.type, data_dir = config_path.data_dir, 
                         num_class = FLAGS.nclass,
                         resize = 224,
-                        num_channel = FLAGS.nchannel)
+                        num_channel = NUM_CHANNEL)
 
     # Print image class name and label
     # print(dataset_train.label_dict)
@@ -31,14 +33,14 @@ def get_config(FLAGS):
     dataset_val = ImageLabelFromFolder(FLAGS.type, data_dir = config_path.data_dir, 
                         num_class = FLAGS.nclass,
                         resize = 224,
-                        num_channel = FLAGS.nchannel)
+                        num_channel = NUM_CHANNEL)
 
     # Image use for inference the class acitivation map during training
     dataset_test = ImageFromFile(FLAGS.type, 
                                 data_dir = config_path.infer_data_dir, 
                                 shuffle = False,
                                 resize = 224,
-                                num_channel = FLAGS.nchannel)
+                                num_channel = NUM_CHANNEL)
 
     # Check accuracy during training using training set
     inference_list_validation = [InferScalars('accuracy/result', 'test_accuracy')]
@@ -50,7 +52,7 @@ def get_config(FLAGS):
 
     return TrainConfig(
                  dataflow = dataset_train, 
-                 model = VGGCAM(num_class = FLAGS.nclass, 
+                 model = VGGCAM(num_class = NUM_CHANNEL, 
                            inspect_class = FLAGS.label,
                            learning_rate = 0.001,
                            is_load = True,
@@ -79,11 +81,11 @@ def get_predict_config(FLAGS):
                                 data_dir = config_path.test_data_dir, 
                                 shuffle = False,
                                 resize = 224,
-                                num_channel = 3)
+                                num_channel = NUM_CHANNEL)
     # dataset_test = ImageLabelFromFolder('.jpg', data_dir = config_path.data_dir, 
     #                     num_class = FLAGS.nclass,
     #                     resize = 224,
-    #                     num_channel = FLAGS.nchannel)
+    #                     num_channel = NUM_CHANNEL)
     prediction_list = [
              # PredictionScalar(['pre_label'], ['label']),
              # PredictionMeanScalar('accuracy/result', 'test_accuracy'),
@@ -94,7 +96,7 @@ def get_predict_config(FLAGS):
 
     return PridectConfig(
                 dataflow = dataset_test,
-                model = VGGCAM(num_class = FLAGS.nclass, 
+                model = VGGCAM(num_class = NUM_CHANNEL, 
                            inspect_class = FLAGS.label,
                            learning_rate = 0.001,
                            is_load = True,
@@ -111,8 +113,6 @@ def get_args():
                         help = 'Label of inspect class.')
     parser.add_argument('--nclass', default = 257, type = int, 
                         help = 'number of image class')
-    parser.add_argument('--nchannel', default = 3, type = int, 
-                        help = 'number of image channels')
 
     parser.add_argument('--predict', action = 'store_true', 
                         help = 'Run prediction')

@@ -8,7 +8,7 @@
 
 <!--- This implementation has been tested on MNIST and Caltech-256 dataset, and can be tested on your own dataset as well.-->
 
-- This implementation has been tested Caltech-256 dataset, and can be tested on your own dataset as well.
+- This implementation has been tested [Caltech-256](http://www.vision.caltech.edu/Image_Datasets/Caltech256/) dataset, and can be tested on your own dataset as well.
 
 ## Requirements
 - Python 3.3+
@@ -68,56 +68,64 @@ Download the pre-trained parameters VGG19 NPY [here](https://github.com/machrisa
 ##### Testing
  
  - Put trained model parameters in *`config.model_dir`*.
+ 
+ - Put testing images in  *`config.test_data_dir`*.
 
  - Prediction result will be save in *`config.result_dir`*.
 
 ### Run script
 
-#### Train the network for CAM
-
-<!--Train simple dataset from the scratch:
-
-	$ python mnist.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL-->
+#### Train and test on Caltech-256:
 
 - ##### Finetuning pre-trained VGG19 for Caltech-256:
 
 ```
-	$ python vgg.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL --type .jpg
-```
-	
-**INFER_CLASS_LABEL** is the label of the class used to generate the inference class activation map during training.
-	
-- ##### Finetuning pre-trained VGG19 for your own data set:
+	$ python vgg.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL
+```	
 
-1. Put training image in *`config.data_dir`*. Image of different classes are in different folders. Uncomment *`print(dataset_train.label_dict)`* to check the image class label and the corresponding label index for training and testing. 
 
-   **May not work well on low resolution images, since all the images will be rescale to 224 x 224 for training.**
+- ##### Generate the class activation map using trained parameters
 
-2. Then run:
-
-```
-	$ python vgg.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL\
-	  --nclass NUM_IMAGE_CLASS --nchannel NUM_IMAGE_CHANNEL\
-	  --type IMAGE_FILE_EXTENSION(start with '.')
-```
-	    
-- #### Generate the class activation map using trained parameters
-
-1. Put testing images in *`config.test_data_dir`*. 
-2. Then run:
+   Put testing images in *`config.test_data_dir`*, then run:
 
 ```	  
-	$ python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME\
-	 --label INFER_CLASS_LABEL --nchannel NUM_IMAGE_CHANNEL\
-	 --type IMAGE_FILE_EXTENSION(start with '.')
+	$ python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME --label INFER_CLASS_LABEL
 ```
+
+**INFER_CLASS_LABEL** is the label of the class used to generate the inference class activation map during training.
 
 - The scaled class activation map will be saved in *`config.result_dir`* along with a .mat file containing raw data of the map.
 
 - If batch size is greater than 1, the result images of one mini batch will be save as one image.  
 
-- **Batch size has to be one if the testing images have different size.** Or you can resize the images to 224 x 224 by uncomment *`resize = 224,`* (line 81). Please refer to the code comments for more detailed parameters setting.  
+- **Batch size has to be one during testing if the testing images have different size.** Or you can resize the images to 224 x 224 by uncomment *`resize = 224,`* (line 83). Please refer to the code comments for more detailed parameters setting.  
 
+
+#### Train and test on your own dataset:
+- ##### Dataset requirement:
+  1. Put training image in *`config.data_dir`*. Image of different classes are in different folders. Uncomment print(dataset_train.label_dict) to check the image class label and the corresponding label index for training and testing.
+ 
+  2. The images have to be color images with 3 channels.
+ 
+  3. May not work well on low resolution images, since all the images will be rescale to 224 x 224 for training.
+ 
+ 
+- ##### Finetuning pre-trained VGG19 for your own dataset:
+   The number of image classes and image file type needs to be specified:
+
+```
+	$ python vgg.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL --nclass NUM_IMAGE_CLASS\
+    --type IMAGE_FILE_EXTENSION(start with '.')
+```	
+
+- ##### Generate the class activation map using trained parameters
+
+  Put testing images in *`config.test_data_dir`*, then run:
+
+```	  
+	$ python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME --label INFER_CLASS_LABEL\
+	--type IMAGE_FILE_EXTENSION(start with '.')
+```
 
 
 ## Author
