@@ -11,6 +11,8 @@ data_dir = 'D:\\Qian\\GitHub\\workspace\\tensorflow-DCGAN\\cifar-10-python.tar\\
 valid_data_dir = 'D:\\Qian\\GitHub\\workspace\\dataset\\ImageNet\\ILSVRC2017_DET_test_new\\ILSVRC\\Data\\DET\\'
 # valid_data_dir = 'D:\\Qian\\GitHub\\workspace\\VGG\\'
 
+infer_data_dir = 'D:\\Qian\\GitHub\\workspace\\tensorflow-DCGAN\\cifar-10-python.tar\\'
+
 # directory for saving inference data
 infer_dir = 'D:\\Qian\\GitHub\\workspace\\test\\result\\'
 

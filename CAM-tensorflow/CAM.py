@@ -7,7 +7,6 @@ import tensorcv
 from tensorcv.models.layers import *
 from tensorcv.models.base import BaseModel
 from tensorcv.dataflow.image import *
-# from tensorcv.algorithms.pretrained.VGG import VGG19_FCN
 
 class BaseCAM(BaseModel):
     """ base of class activation map class """
@@ -99,11 +98,16 @@ class mnistCAM(BaseCAM):
     """ for simple images like mnist """
 
     def _create_conv(self, input_im):
-        conv1 = conv(input_im, 5, 32, 'conv1', nl = tf.nn.relu)
-        pool1 = max_pool(conv1, 'pool1', padding = 'VALID')
+        arg_scope = tf.contrib.framework.arg_scope
+        with arg_scope([conv], nl = tf.nn.relu, init_w = tf.truncated_normal_initializer(stddev = 0.002)):
+            
+            conv1_1 = conv(input_im, 3, 32, 'conv1_1')
+            conv1_2 = conv(conv1_1, 3, 32, 'conv1_2')
+            pool1 = max_pool(conv1_2, 'pool1', padding = 'VALID')
 
-        conv2 = conv(pool1, 5, 64, 'conv2', nl = tf.nn.relu)
-        pool2 = max_pool(conv2, 'pool2', padding = 'VALID')
+            conv2_1 = conv(pool1, 3, 64, 'conv2_1')
+            conv2_2 = conv(conv2_1, 3, 64, 'conv2_2')
+            pool2 = max_pool(conv2_2, 'pool2', padding = 'VALID')
 
         return pool2
 
@@ -113,14 +117,15 @@ class mnistCAM(BaseCAM):
         keep_prob = self.model_input[1]
 
         conv_cam = self._create_conv(input_im)
-        # conv_cam = conv(conv_out, 5, 128, 'conv_cam', nl = tf.nn.relu)
+        conv_cam = conv(conv_cam, 3, 128, 'conv_cam', nl = tf.nn.relu, wd = 0.01)
 
         gap = global_avg_pool(conv_cam)
         # dropout_gap = dropout(gap, keep_prob, self.is_training)
 
         with tf.variable_scope('fc_cam'):
-            init = tf.truncated_normal_initializer(stddev = 0.01)
-            fc_w = new_weights('weights', 1,
+            # init = tf.truncated_normal_initializer(stddev = 0.01)
+            init = tf.truncated_normal_initializer(stddev = 0.002)
+            fc_w = new_weights('weights', 0,
                 [gap.get_shape().as_list()[-1], self._num_class], 
                 initializer = None, wd = 0.01)
             fc1 = tf.matmul(gap, fc_w, name = 'output')
@@ -191,8 +196,9 @@ class VGGCAM(BaseCAM):
             conv5_1 = conv(pool4, 3, 512, 'conv5_1')
             conv5_2 = conv(conv5_1, 3, 512, 'conv5_2')
             conv5_3 = conv(conv5_2, 3, 512, 'conv5_3')
+            conv5_4 = conv(conv5_3, 3, 512, 'conv5_4')
 
-        return conv5_3
+        return conv5_4
 
     def _create_model(self):
 
@@ -220,7 +226,6 @@ class VGGCAM(BaseCAM):
             with tf.name_scope('classmap') as scope:
                 self.get_classmap(self._inspect_class, conv_cam, input_im) 
 
-
 if __name__ == '__main__':
     num_class = 257
     num_channels = 3
@@ -243,41 +248,4 @@ if __name__ == '__main__':
         sess.run(tf.global_variables_initializer())
         writer.add_graph(sess.graph)
     writer.close()
-
-    # print(tf.trainable_variables())
-    # # optimizer = vgg_cam_model.get_optimizer()
-    # # loss = vgg_cam_model.get_loss()
-    # # grads = optimizer.compute_gradients(loss)
-    # # grads = vgg_cam_model.get_grads()
-    # # opt = vgg_cam_model.get_optimizer()
-    # # train_op = opt.apply_gradients(grads, name = 'train')
-
-
-
-    # writer = tf.summary.FileWriter('D:\\Qian\\GitHub\\workspace\\test\\')
-    # with tf.Session() as sess:
-    #     # sess.run(tf.global_variables_initializer())
-    #     writer.add_graph(sess.graph)
-
-    # writer.close()
-
-
-# def overlay(img, heatmap, cmap='jet', alpha=0.5):
-
-#     if isinstance(img, np.ndarray):
-#         img = Image.fromarray(img)
-
-#     if isinstance(heatmap, np.ndarray):
-#         colorize = plt.get_cmap(cmap)
-#         # Normalize
-#         heatmap = heatmap - np.min(heatmap)
-#         heatmap = heatmap / np.max(heatmap)
-#         heatmap = colorize(heatmap, bytes=True)
-#         heatmap = Image.fromarray(heatmap[:, :, :3], mode='RGB')
-
-#     # Resize the heatmap to cover whole img
-#     heatmap = heatmap.resize((img.size[0], img.size[1]), resample=Image.BILINEAR)
-#     # Display final overlayed output
-#     result = Image.blend(img, heatmap, alpha)
-#     return result
 
