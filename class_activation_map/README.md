@@ -8,7 +8,7 @@
 
 <!--- This implementation has been tested on MNIST and Caltech-256 dataset, and can be tested on your own dataset as well.-->
 
-- This implementation has been tested [Caltech-256](http://www.vision.caltech.edu/Image_Datasets/Caltech256/) dataset, and can be tested on your own dataset as well.
+- This implementation has been tested on [Caltech-256](http://www.vision.caltech.edu/Image_Datasets/Caltech256/) dataset, and can be tested on your own dataset as well.
 
 ## Requirements
 - Python 3.3+
