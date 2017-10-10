@@ -1,4 +1,4 @@
-# Class Activation Map (CAM)
+# Class Activation Mapping (CAM)
 
 - TensorFlow implementation of [Learning Deep Features for Discriminative Localization](https://arxiv.org/abs/1512.04150) (CVPR'16).
 
