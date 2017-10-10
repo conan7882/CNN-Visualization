@@ -79,13 +79,13 @@ Download the pre-trained parameters VGG19 NPY [here](https://github.com/machrisa
 
 	$ python mnist.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL-->
 
-##### Finetuning pre-trained VGG19 for Caltech-256:
+- ##### Finetuning pre-trained VGG19 for Caltech-256:
 
 	$ python vgg.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL --type .jpg
 	
 **INFER_CLASS_LABEL** is the label of the class used to generate the inference class activation map during training.
 	
-##### Finetuning pre-trained VGG19 for your own data set:
+- ##### Finetuning pre-trained VGG19 for your own data set:
 
 - Put training image in *`config.data_dir`*. Image of different classes are in different folders. Uncomment *`print(dataset_train.label_dict)`* to check the image class label and the corresponding label index for training and testing. 
 
@@ -96,10 +96,10 @@ Download the pre-trained parameters VGG19 NPY [here](https://github.com/machrisa
 	$ python vgg.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL\
 	  --nclass NUM_IMAGE_CLASS --nchannel NUM_IMAGE_CHANNEL\
 	  --type IMAGE_FILE_EXTENSION(start with '.')
-	  
-#### Generate the class activation map using trained parameters
+	    
+- #### Generate the class activation map using trained parameters
 
-- Put testing image in *`config.test_data_dir`*, then run
+- Put testing image in *`config.test_data_dir`*, then run:
 	  
 	$ python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME\
 	 --label INFER_CLASS_LABEL --nchannel NUM_IMAGE_CHANNEL\
