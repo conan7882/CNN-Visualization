@@ -89,11 +89,11 @@ Download the pre-trained parameters VGG19 NPY [here](https://github.com/machrisa
 	
 - ##### Finetuning pre-trained VGG19 for your own data set:
 
-- Put training image in *`config.data_dir`*. Image of different classes are in different folders. Uncomment *`print(dataset_train.label_dict)`* to check the image class label and the corresponding label index for training and testing. 
+1. Put training image in *`config.data_dir`*. Image of different classes are in different folders. Uncomment *`print(dataset_train.label_dict)`* to check the image class label and the corresponding label index for training and testing. 
 
-- May not work well on low resolution images, since all the images will be rescale to 224 x 224 for training.
+ **May not work well on low resolution images, since all the images will be rescale to 224 x 224 for training.**
 
-- Then run:
+2. Then run:
 
 ```
 	$ python vgg.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL\
@@ -103,7 +103,8 @@ Download the pre-trained parameters VGG19 NPY [here](https://github.com/machrisa
 	    
 - #### Generate the class activation map using trained parameters
 
-- Put testing image in *`config.test_data_dir`*, then run:
+1. Put testing image in *`config.test_data_dir`*. 
+2. Then run:
 
 ```	  
 	$ python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME\
