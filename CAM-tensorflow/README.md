@@ -44,7 +44,7 @@ Class activation map of same image for different classes
 
 1. Setup directories in file *configvgg.py*. 
   
-  - Training
+      - Training
   
      *`config.vgg_dir`* - directory of pre-trained VGG19 parameters
        
@@ -58,7 +58,7 @@ Class activation map of same image for different classes
        
      *`config.infer_dir`* - directory of saving inference result (saved every 100 training steps)
        
-  - Testing
+      - Testing
       
      *`config.model_dir`* - directory of trained model parameters
      
@@ -68,9 +68,9 @@ Class activation map of same image for different classes
        
 2. Download dataset and pre-trained VGG parameters
  
-- Download [Caltech-256](http://www.vision.caltech.edu/Image_Datasets/Caltech256/) dataset and put it in *`config.data_dir`*
+    - Download [Caltech-256](http://www.vision.caltech.edu/Image_Datasets/Caltech256/) dataset and put it in *`config.data_dir`*
        
-- Download pre-trained VGG19 model [here](https://github.com/machrisaa/tensorflow-vgg#tensorflow-vgg16-and-vgg19) and put it in *`config.vgg_dir`*.
+    - Download pre-trained VGG19 model [here](https://github.com/machrisaa/tensorflow-vgg#tensorflow-vgg16-and-vgg19) and put it in *`config.vgg_dir`*.
        
 
 ## Train and test on Caltech-256:
