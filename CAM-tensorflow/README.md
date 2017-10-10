@@ -29,7 +29,7 @@
 ## Results
 <!--- ### MNIST-->
 
-- ### Caltech-256
+### Caltech-256
 
 Class activation map for class llama at different steps during training
 ![celtech_change](figs/celtech_change.png)
@@ -73,20 +73,16 @@ Class activation map of same image for different classes
 - Download pre-trained VGG19 model [here](https://github.com/machrisaa/tensorflow-vgg#tensorflow-vgg16-and-vgg19) and put it in *`config.vgg_dir`*.
        
 
-## Run script
+## Train and test on Caltech-256:
 
-### Train and test on Caltech-256:
-
-- ##### Finetuning pre-trained VGG19 for Caltech-256:
+Finetuning pre-trained VGG19 for Caltech-256:
 
 ```
 python vgg.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL
 ```	
 
 
-- ##### Generate the class activation map using trained parameters
-
-   Put testing images in *`config.test_data_dir`*, then run:
+Generate the class activation map using trained parameters
 
 ```	  
 python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME --label INFER_CLASS_LABEL
@@ -101,8 +97,10 @@ python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME --label I
 - **Batch size has to be one during testing if the testing images have different size.** Or you can resize the images to 224 x 224 by uncomment *`resize = 224,`* (line 83). Please refer to the code comments for more detailed parameters setting.  
 
 
-### Train and test on your own dataset:
-- ##### Dataset requirement:
+## Train and test on your own dataset:
+
+Dataset requirement:
+
   1. Put training image in *`config.data_dir`*. Image of different classes are in different folders. Uncomment print(dataset_train.label_dict) to check the image class label and the corresponding label index for training and testing.
  
   2. The images have to be color images with 3 channels.
@@ -110,17 +108,16 @@ python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME --label I
   3. May not work well on low resolution images, since all the images will be rescale to 224 x 224 for training.
  
  
-- ##### Finetuning pre-trained VGG19 for your own dataset:
-   The number of image classes and image file type needs to be specified:
+Finetuning pre-trained VGG19 for your own dataset:
+
+   - The number of image classes and image file type needs to be specified:
 
 ```
 python vgg.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL --nclass NUM_IMAGE_CLASS\
 --type IMAGE_FILE_EXTENSION(start with '.')
 ```	
 
-- ##### Generate the class activation map using trained parameters
-
-  Put testing images in *`config.test_data_dir`*, then run:
+Generate the class activation map using trained parameters
 
 ```	  
 python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME --label INFER_CLASS_LABEL\
