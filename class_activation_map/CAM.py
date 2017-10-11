@@ -46,7 +46,8 @@ class BaseCAM(BaseModel):
             return tf.add_n(tf.get_collection('losses'), name='result')           
 
     def _get_optimizer(self):
-        return tf.train.AdamOptimizer(beta1=0.5, learning_rate=self._learning_rate)
+        return tf.train.AdamOptimizer(beta1=0.5, 
+                                     learning_rate=self._learning_rate)
 
     def _ex_setup_graph(self):
         with tf.name_scope('accuracy'):
@@ -56,7 +57,8 @@ class BaseCAM(BaseModel):
                         name='result')
 
     def _setup_summary(self):
-        tf.summary.scalar("train_accuracy", self.accuracy, collections=['train'])
+        tf.summary.scalar("train_accuracy", self.accuracy, 
+                          collections=['train'])
 
     def get_classmap(self, label, conv_out, input_im):
         """
@@ -82,16 +84,20 @@ class BaseCAM(BaseModel):
         # Get weights corresponding to class = label
         with tf.variable_scope('fc_cam') as scope:
             scope.reuse_variables()
-            label_w = tf.gather(tf.transpose(tf.get_variable('weights')), label)
+            label_w = tf.gather(
+                          tf.transpose(tf.get_variable('weights')), label)
             label_w = tf.reshape(label_w, [-1, conv_out_channel, 1]) 
             label_w = tf.tile(label_w, [tf.shape(conv_out)[0], 1, 1])
 
-        conv_reshape = tf.reshape(conv_out, [-1, conv_height * conv_width, conv_out_channel])
+        conv_reshape = tf.reshape(conv_out, 
+                           [-1, conv_height * conv_width, conv_out_channel])
         classmap = tf.matmul(conv_reshape, label_w)
 
         # Interpolate to orginal size
         classmap = tf.reshape(classmap, [-1, conv_height, conv_width, 1])
-        classmap = tf.image.resize_bilinear(classmap, [o_height, o_width], name='result')
+        classmap = tf.image.resize_bilinear(classmap, 
+                                            [o_height, o_width], 
+                                            name='result')
 
 
 class mnistCAM(BaseCAM):
@@ -99,7 +105,8 @@ class mnistCAM(BaseCAM):
 
     def _create_conv(self, input_im):
         arg_scope = tf.contrib.framework.arg_scope
-        with arg_scope([conv], nl=tf.nn.relu, init_w=tf.truncated_normal_initializer(stddev=0.002)):
+        with arg_scope([conv], nl=tf.nn.relu, 
+                       init_w=tf.truncated_normal_initializer(stddev=0.002)):
             
             conv1_1 = conv(input_im, 3, 32, 'conv1_1')
             conv1_2 = conv(conv1_1, 3, 32, 'conv1_2')
@@ -169,10 +176,12 @@ class VGGCAM(BaseCAM):
 
         data_dict = {}
         if self._is_load:
-            data_dict = np.load(self._pre_train_path, encoding='latin1').item()
+            data_dict = np.load(self._pre_train_path, e
+                                ncoding='latin1').item()
 
         arg_scope = tf.contrib.framework.arg_scope
-        with arg_scope([conv], nl=tf.nn.relu, trainable=False, data_dict=data_dict):
+        with arg_scope([conv], nl=tf.nn.relu, trainable=False, 
+                        data_dict=data_dict):
             conv1_1 = conv(input_im, 3, 64, 'conv1_1')
             conv1_2 = conv(conv1_1, 3, 64, 'conv1_2')
             pool1 = max_pool(conv1_2, 'pool1', padding='SAME')
@@ -207,7 +216,8 @@ class VGGCAM(BaseCAM):
         
         conv_out = self._create_conv(input_im)
 
-        conv_cam = conv(conv_out, 3, 1024, 'conv_cam', nl=tf.nn.relu, wd=0.01)
+        conv_cam = conv(conv_out, 3, 1024, 'conv_cam', 
+                        nl=tf.nn.relu, wd=0.01)
         gap = global_avg_pool(conv_cam)
         dropout_gap = dropout(gap, keep_prob, self.is_training)
 

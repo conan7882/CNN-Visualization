@@ -19,7 +19,8 @@ NUM_CHANNEL = 3
 
 def get_config(FLAGS):
     # data for training
-    dataset_train = ImageLabelFromFolder(FLAGS.type, data_dir=config_path.data_dir, 
+    dataset_train = ImageLabelFromFolder(FLAGS.type, 
+                        data_dir=config_path.data_dir, 
                         num_class=FLAGS.nclass,
                         resize=224,
                         num_channel=NUM_CHANNEL)
@@ -30,7 +31,8 @@ def get_config(FLAGS):
     # Since the aim of training is visulization of class map, all the images 
     # are used for training. Using the training set as validation set is just
     # for checking whether the training works correctly.
-    dataset_val = ImageLabelFromFolder(FLAGS.type, data_dir=config_path.data_dir, 
+    dataset_val = ImageLabelFromFolder(FLAGS.type, 
+                        data_dir=config_path.data_dir, 
                         num_class=FLAGS.nclass,
                         resize=224,
                         num_channel=NUM_CHANNEL)
@@ -43,10 +45,13 @@ def get_config(FLAGS):
                                 num_channel=NUM_CHANNEL)
 
     # Check accuracy during training using training set
-    inference_list_validation = [InferScalars('accuracy/result', 'test_accuracy')]
+    inference_list_validation = [
+                          InferScalars('accuracy/result', 'test_accuracy')
+                    ]
     # Check class acitivation map during training
     inference_list_test = [
-           InferOverlay(['classmap/result', 'image'], ['map', 'image'], color=True),
+           InferOverlay(['classmap/result', 'image'], ['map', 'image'], 
+                        color=True),
            InferImages('classmap/result', 'map', color=True)
         ]
 
@@ -82,7 +87,8 @@ def get_predict_config(FLAGS):
                                 shuffle=False,
                                 resize=224,
                                 num_channel=NUM_CHANNEL)
-    # dataset_test = ImageLabelFromFolder('.jpg', data_dir = config_path.data_dir, 
+    # dataset_test = ImageLabelFromFolder('.jpg', 
+    #                     data_dir = config_path.data_dir, 
     #                     num_class = FLAGS.nclass,
     #                     resize = 224,
     #                     num_channel = NUM_CHANNEL)
@@ -90,7 +96,8 @@ def get_predict_config(FLAGS):
              # PredictionScalar(['pre_label'], ['label']),
              # PredictionMeanScalar('accuracy/result', 'test_accuracy'),
              PredictionMat('classmap/result', ['test']),
-             PredictionOverlay(['classmap/result', 'image'], ['map', 'image'], color=True, merge_im=True),
+             PredictionOverlay(['classmap/result', 'image'], ['map', 'image'], 
+                              color=True, merge_im=True),
              PredictionImage(['image'], ['image'], color=True, merge_im=True)
              ]
 
