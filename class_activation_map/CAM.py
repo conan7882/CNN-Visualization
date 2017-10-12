@@ -176,8 +176,8 @@ class VGGCAM(BaseCAM):
 
         data_dict = {}
         if self._is_load:
-            data_dict = np.load(self._pre_train_path, e
-                                ncoding='latin1').item()
+            data_dict = np.load(self._pre_train_path, 
+                                encoding='latin1').item()
 
         arg_scope = tf.contrib.framework.arg_scope
         with arg_scope([conv], nl=tf.nn.relu, trainable=False, 
@@ -216,8 +216,9 @@ class VGGCAM(BaseCAM):
         
         conv_out = self._create_conv(input_im)
 
+        init_b = tf.truncated_normal_initializer(stddev=0.01)
         conv_cam = conv(conv_out, 3, 1024, 'conv_cam', 
-                        nl=tf.nn.relu, wd=0.01)
+                        nl=tf.nn.relu, wd=0.01, init_b = init_b)
         gap = global_avg_pool(conv_cam)
         dropout_gap = dropout(gap, keep_prob, self.is_training)
 
@@ -225,7 +226,7 @@ class VGGCAM(BaseCAM):
             init = tf.truncated_normal_initializer(stddev=0.01)
             fc_w = new_weights('weights', 1,
                 [gap.get_shape().as_list()[-1], self._num_class], 
-                initializer=None, wd=0.01)
+                initializer=init, wd=0.01)
             fc_cam = tf.matmul(dropout_gap, fc_w, name='output')
 
         self.output = tf.identity(fc_cam, 'model_output') 

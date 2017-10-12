@@ -57,7 +57,7 @@ def get_config(FLAGS):
 
     return TrainConfig(
                  dataflow = dataset_train, 
-                 model = VGGCAM(num_class=NUM_CHANNEL, 
+                 model = VGGCAM(num_class=FLAGS.nclass, 
                            inspect_class=FLAGS.label,
                            learning_rate=0.001,
                            is_load=True,
@@ -71,7 +71,7 @@ def get_config(FLAGS):
                                   batch_count=10, 
                                   inferencers=inference_list_validation),
                     FeedInference(dataset_test, periodic=50,
-                                  infer_batch_size=4, 
+                                  infer_batch_size=1, 
                                   inferencers=inference_list_test),
                     CheckScalar(['accuracy/result','loss/result'], 
                                  periodic=10),
@@ -103,9 +103,8 @@ def get_predict_config(FLAGS):
 
     return PridectConfig(
                 dataflow = dataset_test,
-                model = VGGCAM(num_class=NUM_CHANNEL, 
+                model = VGGCAM(num_class=FLAGS.nclass, 
                            inspect_class=FLAGS.label,
-                           learning_rate=0.001,
                            is_load=True,
                            pre_train_path=config_path.vgg_dir),
                 model_name=FLAGS.model,
