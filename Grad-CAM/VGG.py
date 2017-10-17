@@ -33,6 +33,8 @@ class BaseVGG(BaseModel):
         self.im_width = im_width
         self.num_class = num_class
 
+        self.layer = {}
+
         self._is_load = is_load
         if self._is_load and pre_train_path is None:
             raise ValueError('pre_train_path can not be None!')
@@ -97,9 +99,10 @@ class VGG19(BaseVGG):
             conv5_2 = conv(conv5_1, 3, 512, 'conv5_2')
             conv5_3 = conv(conv5_2, 3, 512, 'conv5_3')
             conv5_4 = conv(conv5_3, 3, 512, 'conv5_4')
+            self.layer['conv5_4'] = conv5_4
             pool5 = max_pool(conv5_4, 'pool5', padding='SAME')
 
-        self.conv_out = tf.identity(conv5_4)
+        # self.conv_out = tf.identity(conv5_4)
 
         return pool5
 
@@ -133,10 +136,10 @@ class VGG19(BaseVGG):
             fc7 = fc(dropout_fc6, 4096, 'fc7', nl=tf.nn.relu)
             dropout_fc7 = dropout(fc7, keep_prob, self.is_training)
 
-            self.check = tf.identity(fc7)
             fc8 = fc(dropout_fc7, self.num_class, 'fc8')
+            self.layer['fc8'] = self.layer['output'] = fc8
 
-        self.output = tf.identity(fc8, 'model_output')
+        # self.output = tf.identity(fc8, 'model_output')
 
 class VGG19_FCN(VGG19):
 
@@ -170,8 +173,8 @@ class VGG19_FCN(VGG19):
             fc7 = conv(dropout_fc6, 1, 4096, 'fc7', nl=tf.nn.relu, padding='VALID')
             dropout_fc7 = dropout(fc7, keep_prob, self.is_training)
 
-
             fc8 = conv(dropout_fc7, 1, self.num_class, 'fc8', padding='VALID')
+            self.layer['fc8'] = self.layer['output'] = fc8
 
         # self.conv_output = tf.identity(conv5_4, 'conv_output')
         self.output = tf.identity(fc8, 'model_output')
