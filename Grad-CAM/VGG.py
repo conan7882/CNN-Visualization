@@ -54,20 +54,6 @@ class BaseVGG(BaseModel):
         self.set_train_placeholder([self.image, self.label])
         self.set_prediction_placeholder(self.image)
 
-    @staticmethod
-    def load_pre_trained(session, model_path, skip_layer=[]):
-        weights_dict = np.load(model_path, encoding='latin1').item()
-        for layer_name in weights_dict:
-            print('Loading ' + layer_name)
-            if layer_name not in skip_layer:
-                with tf.variable_scope(layer_name, reuse=True):
-                    for data in weights_dict[layer_name]:
-                        if len(data.shape) == 1:
-                            var = tf.get_variable('biases', trainable=False)
-                            session.run(var.assign(data))
-                        else:
-                            var = tf.get_variable('weights', trainable=False)
-                            session.run(var.assign(data))
 
 class VGG19(BaseVGG):
 
@@ -99,28 +85,32 @@ class VGG19(BaseVGG):
             conv5_2 = conv(conv5_1, 3, 512, 'conv5_2')
             conv5_3 = conv(conv5_2, 3, 512, 'conv5_3')
             conv5_4 = conv(conv5_3, 3, 512, 'conv5_4')
-            self.layer['conv_out'] = self.layer['conv5_4'] = conv5_4
             pool5 = max_pool(conv5_4, 'pool5', padding='SAME')
 
-        # self.conv_out = tf.identity(conv5_4)
+            self.layer['conv1_2'] = conv1_2
+            self.layer['conv2_2'] = conv2_2
+            self.layer['conv3_4'] = conv3_4
+            self.layer['conv4_4'] = conv4_4
+            self.layer['conv_out'] = self.layer['conv5_4'] = conv5_4
 
         return pool5
 
     def _create_model(self):
 
-        input_im = self.model_input[0]
-        keep_prob = self.model_input[1]
+        with tf.name_scope('input'):
+            input_im = self.model_input[0]
+            keep_prob = self.model_input[1]
 
-        input_im = tf.reshape(input_im, [-1, 224, 224, 3])
-        # Convert RGB image to BGR image
-        red, green, blue = tf.split(axis=3, num_or_size_splits=3, 
-                                    value=input_im)
+            input_im = tf.reshape(input_im, [-1, 224, 224, 3])
+            # Convert RGB image to BGR image
+            red, green, blue = tf.split(axis=3, num_or_size_splits=3, 
+                                        value=input_im)
 
-        input_bgr = tf.concat(axis=3, values=[
-            blue - VGG_MEAN[0],
-            green - VGG_MEAN[1],
-            red - VGG_MEAN[2],
-        ])
+            input_bgr = tf.concat(axis=3, values=[
+                blue - VGG_MEAN[0],
+                green - VGG_MEAN[1],
+                red - VGG_MEAN[2],
+            ])
 
         data_dict = {}
         if self._is_load:
@@ -137,9 +127,10 @@ class VGG19(BaseVGG):
             dropout_fc7 = dropout(fc7, keep_prob, self.is_training)
 
             fc8 = fc(dropout_fc7, self.num_class, 'fc8')
-            self.layer['fc8'] = self.layer['output'] = fc8
 
-        # self.output = tf.identity(fc8, 'model_output')
+            self.layer['fc6'] = fc6
+            self.layer['fc7'] = fc7
+            self.layer['fc8'] = self.layer['output'] = fc8
 
 class VGG19_FCN(VGG19):
 
@@ -175,35 +166,17 @@ class VGG19_FCN(VGG19):
             dropout_fc7 = dropout(fc7, keep_prob, self.is_training)
 
             fc8 = conv(dropout_fc7, 1, self.num_class, 'fc8', padding='VALID')
+
+            self.layer['fc6'] = fc6
+            self.layer['fc7'] = fc7
             self.layer['fc8'] = self.layer['output'] = fc8
 
-        # self.conv_output = tf.identity(conv5_4, 'conv_output')
         self.output = tf.identity(fc8, 'model_output')
         filter_size = [tf.shape(fc8)[1], tf.shape(fc8)[2]]
 
         self.avg_output = global_avg_pool(fc8)
 
-    @staticmethod
-    def load_pre_trained(session, model_path, skip_layer=[]):
-        fc_layers = ['fc6', 'fc7', 'fc8']
-        weights_dict = np.load(model_path, encoding='latin1').item()
-        for layer_name in weights_dict:
-            print('Loading ' + layer_name)
-            if layer_name not in skip_layer:
-                with tf.variable_scope(layer_name, reuse=True):
-                    for data in weights_dict[layer_name]:
-                        if len(data.shape) == 1:
-                            var = tf.get_variable('biases', trainable=False)
-                            session.run(var.assign(data))
-                        else:
-                            var = tf.get_variable('weights', trainable=False)
-                            if layer_name == 'fc6':
-                                data = tf.reshape(data, [7,7,512,4096])
-                            elif layer_name == 'fc7':
-                                data = tf.reshape(data, [1,1,4096,4096])
-                            elif layer_name == 'fc8':
-                                data = tf.reshape(data, [1,1,4096,1000])
-                            session.run(var.assign(data))
+ 
 
 # if __name__ == '__main__':
 #     VGG = VGG19(num_class=1000, 
