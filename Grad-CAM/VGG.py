@@ -99,7 +99,7 @@ class VGG19(BaseVGG):
             conv5_2 = conv(conv5_1, 3, 512, 'conv5_2')
             conv5_3 = conv(conv5_2, 3, 512, 'conv5_3')
             conv5_4 = conv(conv5_3, 3, 512, 'conv5_4')
-            self.layer['conv5_4'] = conv5_4
+            self.layer['conv_out'] = self.layer['conv5_4'] = conv5_4
             pool5 = max_pool(conv5_4, 'pool5', padding='SAME')
 
         # self.conv_out = tf.identity(conv5_4)
@@ -145,18 +145,19 @@ class VGG19_FCN(VGG19):
 
     def _create_model(self):
 
-        input_im = self.model_input[0]
-        keep_prob = self.model_input[1]
+        with tf.name_scope('input'):
+            input_im = self.model_input[0]
+            keep_prob = self.model_input[1]
 
-        # Convert rgb image to bgr image
-        red, green, blue = tf.split(axis=3, num_or_size_splits=3, 
-                                    value=input_im)
+            # Convert rgb image to bgr image
+            red, green, blue = tf.split(axis=3, num_or_size_splits=3, 
+                                        value=input_im)
 
-        input_bgr = tf.concat(axis=3, values=[
-            blue - VGG_MEAN[0],
-            green - VGG_MEAN[1],
-            red - VGG_MEAN[2],
-        ])
+            input_bgr = tf.concat(axis=3, values=[
+                blue - VGG_MEAN[0],
+                green - VGG_MEAN[1],
+                red - VGG_MEAN[2],
+            ])
 
         data_dict = {}
         if self._is_load:

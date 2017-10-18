@@ -82,7 +82,7 @@ class BaseCAM(BaseModel):
         conv_width = tf.shape(conv_out)[2]
 
         # Get weights corresponding to class = label
-        with tf.variable_scope('fc_cam') as scope:
+        with tf.variable_scope('cam') as scope:
             scope.reuse_variables()
             label_w = tf.gather(
                           tf.transpose(tf.get_variable('weights')), label)
