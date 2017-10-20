@@ -13,17 +13,24 @@ SAVE_DIR = 'E:\\GITHUB\\workspace\\CNN\\test\\'
 VGG_PATH = 'E:\\GITHUB\\workspace\\CNN\\pretrained\\vgg19.npy'
 
 if __name__ == '__main__':
-
+    # placeholder for input image
     image = tf.placeholder(tf.float32, shape=[None, None, None, 3])
-
+    # initialize input dataflow
+    # change '.jpg' to other image types if other types of images are used
     input_im = ImageFromFile('.jpg', data_dir=IM_PATH, 
                              num_channel=3, shuffle=False)
+    # batch size has to be one
     input_im.set_batch_size(1)
 
-    # im = load_image(IM_PATH, read_channel=3)
+    # initialize guided back propagation class
+    # use VGG19 as an example
+    # images will be rescaled to smallest side = 224 is is_rescale=True
     model = GuideBackPro(vis_model=VGG.VGG19_FCN(is_load=True, 
                                                  pre_train_path=VGG_PATH, 
                                                  is_rescale=True))
+
+    # get op to compute guided back propagation map
+    # final output respect to input image
     back_pro_op = model.comp_guided_backpro(image)    
 
     writer = tf.summary.FileWriter(SAVE_DIR)

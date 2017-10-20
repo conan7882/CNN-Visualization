@@ -48,7 +48,6 @@ class GuideBackPro(object):
 
             return act_list, tf.convert_to_tensor(class_list)
             
-
     def comp_guided_backpro(self, image):
         g = tf.get_default_graph()
         with g.gradient_override_map({'Relu': 'GuidedRelu'}):
