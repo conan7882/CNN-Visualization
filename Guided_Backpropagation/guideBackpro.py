@@ -50,16 +50,26 @@ class GuideBackPro(object):
             
     def get_visualization(self, image):
         g = tf.get_default_graph()
-        with g.gradient_override_map({'Relu': 'GuidedRelu'}):
-            with tf.variable_scope('guided_relu') as scope:
-                try:
-                    self._create_model(image)
-                except ValueError:
-                    scope.reuse_variables()
-                    self._create_model(image)
-                act_list, class_list = self._get_activation()
 
-            with tf.name_scope('guided_back_pro'):
+        with g.gradient_override_map({'Relu': 'GuidedRelu'}):
+            try:
+                self._create_model(image)
+            except ValueError:
+                # cur_name_scope = tf.get_variable_scope()
+                scope.reuse_variables()
+                self._create_model(image)
+            act_list, class_list = self._get_activation()
+
+            # with tf.variable_scope('guided_back_pro') as scope:
+            #     try:
+            #         self._create_model(image)
+            #     except ValueError:
+            #         # cur_name_scope = tf.get_variable_scope()
+            #         scope.reuse_variables()
+            #         self._create_model(image)
+            #     act_list, class_list = self._get_activation()
+
+            with tf.name_scope('guided_back_pro_map'):
                 guided_back_pro_list = []
                 for class_act in act_list:
                     guided_back_pro = tf.gradients(class_act, 

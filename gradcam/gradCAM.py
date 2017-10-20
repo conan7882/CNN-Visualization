@@ -55,8 +55,14 @@ class BaseGradCAM(object):
         self._vis_model = vis_model
         self._nchannel = num_channel
 
-    def create_graph(self):
-        raise NotImplementedError()
+    def create_model(self, inputs):
+        self._create_model(inputs)
+
+    def _create_model(self, inputs):
+        pass
+
+    def setup_graph(self):
+        pass
 
     def _comp_feature_importance_weight(self, class_id):
         if not isinstance(class_id, list):
@@ -73,7 +79,7 @@ class BaseGradCAM(object):
                 feature_w = global_avg_pool(feature_grad, name='feature_w_{}'.format(idx))
                 self._feature_w_list.append(feature_w)
 
-    def comp_grad_cam(self, class_id=None):
+    def get_visualization(self, class_id=None):
         assert not class_id is None, 'class_id cannot be None!'
         self._comp_feature_importance_weight(class_id)
 
@@ -94,25 +100,24 @@ class BaseGradCAM(object):
                 classmap = tf.reshape(classmap, [-1, conv_h, conv_w, 1])
                 classmap = tf.nn.relu(tf.image.resize_bilinear(classmap, [o_h, o_w]), name = 'grad_cam_{}'.format(idx))
                 classmap_list.append(tf.squeeze(classmap))
-            return classmap_list
+            return classmap_list, class_id
 
 class ClassifyGradCAM(BaseGradCAM):
-    def __init__(self, vis_model=None, num_channel=3, is_rescale = False):
+    def __init__(self, vis_model=None, num_channel=3, is_rescale=False):
         self._is_rescale = is_rescale
         super(ClassifyGradCAM, self).__init__(vis_model=vis_model, num_channel=num_channel)
 
-    def create_graph(self, image):
-
-        self.in_im = image
+    def _create_model(self, inputs):
         if self._is_rescale:
-            self.in_im = resize_tensor_image_with_smallest_side(image, 224)
+            inputs = resize_tensor_image_with_smallest_side(inputs, 224)
         keep_prob = 1
 
-        self._vis_model.create_model([self.in_im, keep_prob])
+        self._vis_model.create_model([inputs, keep_prob])
 
+    def setup_graph(self):
+        self.input_im = self._vis_model.layer['input']
         self._out_act = global_avg_pool(self._vis_model.layer['output'])
         self._conv_out = self._vis_model.layer['conv_out']
-
         self._nclass = self._out_act.shape.as_list()[-1]
         self.pre_label = tf.nn.top_k(tf.nn.softmax(self._out_act), k=5, sorted=True)
 
@@ -142,10 +147,11 @@ if __name__ == '__main__':
     image = tf.placeholder(tf.float32, shape=[None, None, None, 3])
 
     # create VGG19 model
-    gcam.create_graph(image)
+    gcam.create_model(image)
+    gcam.setup_graph()
 
     # generate class map and prediction label ops
-    map_op = gcam.comp_grad_cam(class_id=class_id)
+    map_op = gcam.get_visualization(class_id=class_id)
     label_op = gcam.pre_label
 
     # initialize input dataflow
@@ -168,9 +174,9 @@ if __name__ == '__main__':
             map_t, label, o_im = sess.run([map_op, label_op, gcam.in_im], feed_dict={image: im})
             print(label)
             o_im_list.extend(o_im)
-            for cid in range(len(map_t)):
-                overlay_im = image_overlay(map_t[cid], o_im)
-                im_list[cid].append(overlay_im)
+            for idx, cid, cmap in enumerate(zip(map_t[1], map_t[0])):
+                overlay_im = image_overlay(cmap, o_im)
+                im_list[idx].append(overlay_im)
             merge_cnt += 1
             if merge_cnt == merge_im:
                 save_path = '{}test_oim_{}.png'.format(save_dir, cnt, cid)
