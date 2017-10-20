@@ -100,11 +100,6 @@ class VGG19(BaseVGG):
 
     def _create_conv(self, input_im, data_dict):
 
-        if self._is_rescale:
-            input_im = resize_tensor_image_with_smallest_side(input_im, 224)
-
-        self.layer['input'] = input_im
-
         arg_scope = tf.contrib.framework.arg_scope
         with arg_scope([conv], nl=tf.nn.relu, trainable=True, data_dict=data_dict):
             conv1_1 = conv(input_im, 3, 64, 'conv1_1')
@@ -149,6 +144,8 @@ class VGG19(BaseVGG):
             keep_prob = self.model_input[1]
 
             input_im = tf.reshape(input_im, [-1, 224, 224, 3])
+
+            self.layer['input'] = input_im
             # Convert RGB image to BGR image
             red, green, blue = tf.split(axis=3, num_or_size_splits=3, 
                                         value=input_im)
@@ -187,6 +184,10 @@ class VGG19_FCN(VGG19):
         with tf.name_scope('input'):
             input_im = self.model_input[0]
             keep_prob = self.model_input[1]
+
+            if self._is_rescale:
+                input_im = resize_tensor_image_with_smallest_side(input_im, 224)
+            self.layer['input'] = input_im
 
             # Convert rgb image to bgr image
             red, green, blue = tf.split(axis=3, num_or_size_splits=3, 
