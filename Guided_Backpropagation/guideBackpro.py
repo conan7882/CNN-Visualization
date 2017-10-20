@@ -48,11 +48,16 @@ class GuideBackPro(object):
 
             return act_list, tf.convert_to_tensor(class_list)
             
-    def comp_guided_backpro(self, image):
+    def get_visualization(self, image):
         g = tf.get_default_graph()
         with g.gradient_override_map({'Relu': 'GuidedRelu'}):
-            self._create_model(image)
-            act_list, class_list = self._get_activation()
+            with tf.variable_scope('guided_relu') as scope:
+                try:
+                    self._create_model(image)
+                except ValueError:
+                    scope.reuse_variables()
+                    self._create_model(image)
+                act_list, class_list = self._get_activation()
 
             with tf.name_scope('guided_back_pro'):
                 guided_back_pro_list = []
@@ -61,4 +66,6 @@ class GuideBackPro(object):
                                                   self._vis_model.layer['input'])
                     guided_back_pro_list.append(guided_back_pro)
 
+                self.visual_map = guided_back_pro_list
+                self.class_list = class_list
                 return guided_back_pro_list, class_list

@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     # get op to compute guided back propagation map
     # final output respect to input image
-    back_pro_op = model.comp_guided_backpro(image)    
+    back_pro_op = model.get_visualization(image)    
 
     writer = tf.summary.FileWriter(SAVE_DIR)
     with tf.Session() as sess:
