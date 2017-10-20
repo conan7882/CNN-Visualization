@@ -10,6 +10,44 @@ from tensorcv.models.base import BaseModel
 
 VGG_MEAN = [103.939, 116.779, 123.68]
 
+def resize_tensor_image_with_smallest_side(image, small_size):
+    """
+    Resize image tensor with smallest side = small_size and
+    keep the original aspect ratio.
+
+    Args:
+        image (tf.tensor): 4-D Tensor of shape [batch, height, width, channels] 
+            or 3-D Tensor of shape [height, width, channels].
+        small_size (int): A 1-D int. The smallest side of resize image.
+
+    Returns:
+        Image tensor with the original aspect ratio and 
+        smallest side = small_size .
+        If images was 4-D, a 4-D float Tensor of shape 
+        [batch, new_height, new_width, channels]. 
+        If images was 3-D, a 3-D float Tensor of shape 
+        [new_height, new_width, channels].       
+    """
+    im_shape = tf.shape(image)
+    shape_dim = image.get_shape()
+    if len(shape_dim) <= 3:
+        height = tf.cast(im_shape[0], tf.float32)
+        width = tf.cast(im_shape[1], tf.float32)
+    else:
+        height = tf.cast(im_shape[1], tf.float32)
+        width = tf.cast(im_shape[2], tf.float32)
+
+    height_smaller_than_width = tf.less_equal(height, width)
+
+    new_shorter_edge = tf.constant(small_size, tf.float32)
+    new_height, new_width = tf.cond(
+    height_smaller_than_width,
+    lambda: (new_shorter_edge, (width/height)*new_shorter_edge),
+    lambda: ((height/width)*new_shorter_edge, new_shorter_edge))
+
+    return tf.image.resize_images(tf.cast(image, tf.float32), 
+        [tf.cast(new_height, tf.int32), tf.cast(new_width, tf.int32)])
+
 class BaseVGG(BaseModel):
     """ base of VGG class """
     def __init__(self, num_class=1000, 
@@ -17,7 +55,8 @@ class BaseVGG(BaseModel):
                  im_height=224, im_width=224,
                  learning_rate=0.0001,
                  is_load=False,
-                 pre_train_path=None):
+                 pre_train_path=None,
+                 is_rescale=False):
         """ 
         Args:
             num_class (int): number of image classes
@@ -32,6 +71,7 @@ class BaseVGG(BaseModel):
         self.im_height = im_height
         self.im_width = im_width
         self.num_class = num_class
+        self._is_rescale = is_rescale
 
         self.layer = {}
 
@@ -46,6 +86,7 @@ class BaseVGG(BaseModel):
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
         self.image = tf.placeholder(tf.float32, name='image',
                             shape=[None, self.im_height, self.im_width, self.num_channels])
+
         self.label = tf.placeholder(tf.int64, [None], 'label')
         # self.label = tf.placeholder(tf.int64, [None, self.num_class], 'label')
 
@@ -58,6 +99,11 @@ class BaseVGG(BaseModel):
 class VGG19(BaseVGG):
 
     def _create_conv(self, input_im, data_dict):
+
+        if self._is_rescale:
+            input_im = resize_tensor_image_with_smallest_side(input_im, 224)
+
+        self.layer['input'] = input_im
 
         arg_scope = tf.contrib.framework.arg_scope
         with arg_scope([conv], nl=tf.nn.relu, trainable=True, data_dict=data_dict):
@@ -87,11 +133,11 @@ class VGG19(BaseVGG):
             conv5_4 = conv(conv5_3, 3, 512, 'conv5_4')
             pool5 = max_pool(conv5_4, 'pool5', padding='SAME')
 
-            self.layer['conv1_1'] = conv1_1
             self.layer['conv1_2'] = conv1_2
             self.layer['conv2_2'] = conv2_2
             self.layer['conv3_4'] = conv3_4
             self.layer['conv4_4'] = conv4_4
+            self.layer['pool5'] = pool5
             self.layer['conv_out'] = self.layer['conv5_4'] = conv5_4
 
         return pool5
@@ -115,7 +161,7 @@ class VGG19(BaseVGG):
 
         data_dict = {}
         if self._is_load:
-            data_dict = np.load(self._pre_train_path, encoding='latin1').item()
+            data_dict = np.load(self._pre_train_path, encoding='latin1').item()  
 
         conv_output = self._create_conv(input_bgr, data_dict)
         
@@ -132,6 +178,7 @@ class VGG19(BaseVGG):
             self.layer['fc6'] = fc6
             self.layer['fc7'] = fc7
             self.layer['fc8'] = self.layer['output'] = fc8
+            
 
 class VGG19_FCN(VGG19):
 
@@ -171,6 +218,7 @@ class VGG19_FCN(VGG19):
             self.layer['fc6'] = fc6
             self.layer['fc7'] = fc7
             self.layer['fc8'] = self.layer['output'] = fc8
+            
 
         self.output = tf.identity(fc8, 'model_output')
         filter_size = [tf.shape(fc8)[1], tf.shape(fc8)[2]]
