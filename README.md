@@ -23,6 +23,7 @@
 - Grad-CAM generates similar class heatmap as CAM, but it does not require to re-train the model for visualizatin.
 
 - Details of the implementation and more results can be find [here](https://github.com/conan7882/CNN-Visualization/tree/master/grad_cam). Some results:
+
 ![grad-cam-result](grad_cam/figs/ex1.png)
 
 ## Class Activation Mapping (CAM)
