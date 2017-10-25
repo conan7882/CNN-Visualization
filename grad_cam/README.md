@@ -76,7 +76,7 @@ Compare with CAM using the same images (Caltech-256) (CAM result can be found [h
 
 ## Run Script:
 
-To get the guided back-propagation maps for all the image in *`IM_PATH`*, just run:
+To get the Grad-CAM maps for all the image in *`IM_PATH`*, just run:
 
 ```
 python gradcam.py
