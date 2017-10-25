@@ -39,9 +39,9 @@ class BaseGradCAM(object):
 
     def get_visualization(self, class_id=None):
         assert not class_id is None, 'class_id cannot be None!'
-        self._comp_feature_importance_weight(class_id)
-
+        
         with tf.name_scope('grad_cam'):
+            self._comp_feature_importance_weight(class_id)
             conv_out = self._conv_out
             conv_c = tf.shape(conv_out)[-1]
             conv_h = tf.shape(conv_out)[1]
