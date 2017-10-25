@@ -41,7 +41,7 @@
    
 2. Download the pre-trained VGG parameters
        
-    - Download pre-trained VGG19 model [here](https://github.com/machrisaa/tensorflow-vgg#tensorflow-vgg16-and-vgg19) and put it in *`config.vgg_dir`*.
+    - Download pre-trained VGG19 model [here](https://github.com/machrisaa/tensorflow-vgg#tensorflow-vgg16-and-vgg19) and put it in *`VGG_PATH*.
          
        
 3. Testing images
