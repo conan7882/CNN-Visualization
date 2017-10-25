@@ -1,6 +1,6 @@
 # Gradient-weighted Class Activation Mapping (Grad-CAM)
 
-- TensorFlow implementation of [Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization](https://arxiv.org/abs/1610.02391) (ICCV'16).
+- TensorFlow implementation of [Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization](https://arxiv.org/abs/1610.02391) (ICCV'17).
 
 - Torch implementation by the authors is [here](https://github.com/ramprs/grad-cam).
 
@@ -32,6 +32,7 @@
 Left to right: Original Image, Grad-CAM, Guided Grad-CAM
 ![ex1](figs/ex1.png)
 ![ex2](figs/ex2.png)
+
 Compare with CAM using the same images (Caltech-256) (CAM result can be found [here](https://github.com/conan7882/CNN-Visualization/tree/master/class_activation_map#caltech-256)):
 
 **ImageNet1000 does not have class 'top hat', so class 'cowboy hat' is used here which gets relatively bad performance to find the hat. Also note that, the pre-trained VGG19 is not trained on Caltech-256.**
@@ -82,9 +83,9 @@ To get the guided back-propagation maps for all the image in *`IM_PATH`*, just r
 python gradcam.py
 ```	
 
-All the test images will be rescaled to smallest side = 224 before feed into VGG19.
+- All the test images will be rescaled to smallest side = 224 before feed into VGG19.
 
-Grad-CAM and Guided Grad-CAM will be saved in *`SAVE_DIR`* as **gradcam_IDX_class_CLASSLABEL.png** and **guided_gradcam_IDX_class_CLASSLABEL.png** 
+- Grad-CAM and Guided Grad-CAM will be saved in *`SAVE_DIR`* as **gradcam_IDX_class_CLASSLABEL.png** and **guided_gradcam_IDX_class_CLASSLABEL.png** 
 
 
 
