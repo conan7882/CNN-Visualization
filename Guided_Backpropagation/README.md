@@ -22,7 +22,7 @@
 
 
 ## Results
-<div align='center'>
+<div align='left'>
   <img src='figs/gbp2.png' height='174px'>
   <img src='figs/gbp1.png' height="174px">
   <img src='figs/gbp3.png' height="174px">
