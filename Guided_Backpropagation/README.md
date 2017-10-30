@@ -22,10 +22,12 @@
 
 
 ## Results
-![gbp1](figs/gbp1.png)
-![gbp2](figs/gbp2.png)
-![gbp3](figs/gbp3.png)
-![gbp4](figs/gbp4.png)
+<div align='center'>
+  <img src='figs/gbp2.png' height='174px'>
+  <img src='figs/gbp1.png' height="174px">
+  <img src='figs/gbp3.png' height="174px">
+  <img src='figs/gbp4.png' height='174px'>
+</div>
 
 ## Observations
 
