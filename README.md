@@ -1,8 +1,6 @@
 # Visualization of Deep Covolutional Neural Networks
 
-
 - This repository contains implementations of visualizatin of CNN in recent papers.
-
 - The source code in the repository can be used to demostrate the algorithms as well as test on your own data.
 
 ## Requirements
@@ -14,9 +12,7 @@
 ## Algorithms 
 
 - [Gradient-weighted Class Activation Mapping (Grad-CAM)](https://github.com/conan7882/CNN-Visualization/tree/master/grad_cam) (ICCV 17)
-
 - [Class Activation Mapping (CAM)](https://github.com/conan7882/CNN-Visualization/tree/master/class_activation_map) (CVPR 16)
-
 - [Guided back propagation](https://github.com/conan7882/CNN-Visualization/tree/master/Guided_Backpropagation) (2014)
 
 ## Gradient-weighted Class Activation Mapping (Grad-CAM)
