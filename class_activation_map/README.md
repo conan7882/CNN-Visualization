@@ -1,14 +1,11 @@
 # Class Activation Mapping (CAM)
 
 - TensorFlow implementation of [Learning Deep Features for Discriminative Localization](https://arxiv.org/abs/1512.04150) (CVPR'16).
-
 - Caffe implementation by the authors is [here](https://github.com/metalbubble/CAM).
-
 - The class activation map highlights the most informative image regions relevant to the predicted class. This map can be obtained by adding a global average pooling layer at the end of convolutional layers.
+- This implementation has been tested on [Caltech-256](http://www.vision.caltech.edu/Image_Datasets/Caltech256/) dataset, and can be tested on your own dataset as well.
 
 <!--- This implementation has been tested on MNIST and Caltech-256 dataset, and can be tested on your own dataset as well.-->
-
-- This implementation has been tested on [Caltech-256](http://www.vision.caltech.edu/Image_Datasets/Caltech256/) dataset, and can be tested on your own dataset as well.
 
 ## Requirements
 - Python 3.3+
@@ -20,9 +17,7 @@
 <!--- For MNIST dataset, a CNN with three convolutional layers followed by a global average pooling layer is used.-->
 
 - CAM of Caltech-256 dataset is obtained by finetuning [VGG19](https://arxiv.org/abs/1409.1556).
-
 - CAM models are defined in *CAM.py*.
-
 - *vgg.py* is used for Caltech-256 or other nature image dataset. Directories are setup in file *configvgg.py*.
 
 
@@ -71,10 +66,8 @@ Class activation map of same image for different classes
 2. Download dataset and pre-trained VGG parameters
  
     - Download [Caltech-256](http://www.vision.caltech.edu/Image_Datasets/Caltech256/) dataset and put it in *`config.data_dir`*
-       
     - Download pre-trained VGG19 model [here](https://github.com/machrisaa/tensorflow-vgg#tensorflow-vgg16-and-vgg19) and put it in *`config.vgg_dir`*.
        
-
 ## Train and test on Caltech-256:
 
 Finetuning pre-trained VGG19 for Caltech-256:

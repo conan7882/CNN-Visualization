@@ -1,13 +1,8 @@
 # Gradient-weighted Class Activation Mapping (Grad-CAM)
 
 - TensorFlow implementation of [Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization](https://arxiv.org/abs/1610.02391) (ICCV'17).
-
 - Torch implementation by the authors is [here](https://github.com/ramprs/grad-cam).
-
 - Grad-CAM generates similar heatmap as [CAM](https://arxiv.org/abs/1512.04150), but it does not require re-train the model.
-
-<!--- This implementation has been tested on MNIST and Caltech-256 dataset, and can be tested on your own dataset as well.-->
-
 - This implementation takes [VGG19](https://arxiv.org/abs/1409.1556) as example. 
 
 ## Requirements
@@ -20,12 +15,8 @@
 <!--- For MNIST dataset, a CNN with three convolutional layers followed by a global average pooling layer is used.-->
 
 - [VGG19](https://arxiv.org/abs/1409.1556) is used for visualization. The model is defined in *CNN-Visualization/common/models/VGG.py*.
-
 - Grad-CAM model is defined in *CNN-Visualization/grad_cam/gradCAM*.
-
 - Main function is in *CNN-Visualization/gradcam.py*.
-
-
 
 ## Results
 
@@ -47,9 +38,7 @@ Compare with CAM using the same images (Caltech-256) (CAM result can be found [h
 1. Setup directories in file *CNN-Visualization/guidedbackpro.py*. 
   
     - *`IM_PATH`* - directory of testing image data
-   
     - *`VGG_PATH`* - directory of pre-trained VGG19 parameters
-   
     - *`SAVE_DIR`* - directory of saving result images
    
 2. Download the pre-trained VGG parameters
@@ -60,7 +49,6 @@ Compare with CAM using the same images (Caltech-256) (CAM result can be found [h
 3. Testing images
  
     - Put testing images in *`IM_PATH`* .
-    
     - Set class labels on line 48 in *CNN-Visualization/gradcam.py*. For example the setting below will generate Grad-CAM and Guided Grad-CAM for class 55 (llama), 543 (dumbbell), 605 (iPod) and 515 (hat). More labels for ImageNet1000 can be found [here](https://github.com/conan7882/VGG-tensorflow/blob/master/imageNetLabel.txt).
     
       ```
@@ -83,10 +71,7 @@ python gradcam.py
 ```	
 
 - All the test images will be rescaled to smallest side = 224 before feed into VGG19.
-
 - Grad-CAM and Guided Grad-CAM will be saved in *`SAVE_DIR`* as **gradcam_IDX_class_CLASSLABEL.png** and **guided_gradcam_IDX_class_CLASSLABEL.png** 
-
-
 
 
 ## Author
