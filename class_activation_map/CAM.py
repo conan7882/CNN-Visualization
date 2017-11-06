@@ -129,7 +129,7 @@ class mnistCAM(BaseCAM):
         gap = global_avg_pool(conv_cam)
         # dropout_gap = dropout(gap, keep_prob, self.is_training)
 
-        with tf.variable_scope('fc_cam'):
+        with tf.variable_scope('cam'):
             # init = tf.truncated_normal_initializer(stddev = 0.01)
             init = tf.truncated_normal_initializer(stddev=0.002)
             fc_w = new_weights('weights', 0,
@@ -222,7 +222,7 @@ class VGGCAM(BaseCAM):
         gap = global_avg_pool(conv_cam)
         dropout_gap = dropout(gap, keep_prob, self.is_training)
 
-        with tf.variable_scope('fc_cam'):
+        with tf.variable_scope('cam'):
             init = tf.truncated_normal_initializer(stddev=0.01)
             fc_w = new_weights('weights', 1,
                 [gap.get_shape().as_list()[-1], self._num_class], 

@@ -55,9 +55,10 @@ class GuideBackPro(object):
             try:
                 self._create_model(image)
             except ValueError:
-                scope = tf.get_variable_scope()
-                scope.reuse_variables()
-                self._create_model(image)
+                with tf.variable_scope(tf.get_variable_scope()) as scope:
+                    # scope = tf.get_variable_scope()
+                    scope.reuse_variables()
+                    self._create_model(image)
             act_list, class_list = self._get_activation()
 
             # with tf.variable_scope('guided_back_pro') as scope:
