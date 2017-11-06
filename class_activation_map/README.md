@@ -86,9 +86,7 @@ python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME --label I
 **INFER_CLASS_LABEL** is the label of the class used to generate the inference class activation map.
 
 - The scaled class activation map will be saved in *`config.result_dir`* along with a .mat file containing raw data of the map.
-
 - If batch size is greater than 1, the result images of one mini batch will be save as one image.  
-
 - **Batch size has to be one during testing if the testing images have different size.** Or you can resize the images to 224 x 224 by uncomment *`resize = 224,`* (line 83). Please refer to the code comments for more detailed parameters setting.  
 
 
@@ -97,9 +95,7 @@ python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME --label I
 Dataset requirement:
 
   1. Put training image in *`config.data_dir`*. Image of different classes are in different folders. Uncomment print(dataset_train.label_dict) to check the image class label and the corresponding label index for training and testing.
- 
   2. The images have to be color images with 3 channels.
- 
   3. May not work well on low resolution images, since all the images will be rescaled to 224 x 224 for training.
  
  
