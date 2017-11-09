@@ -17,8 +17,8 @@
 <!--- For MNIST dataset, a CNN with three convolutional layers followed by a global average pooling layer is used.-->
 
 - CAM of Caltech-256 dataset is obtained by finetuning [VGG19](https://arxiv.org/abs/1409.1556).
-- CAM models are defined in *CAM.py*.
-- *vgg.py* is used for Caltech-256 or other nature image dataset. Directories are setup in file *configvgg.py*.
+- CAM models are defined in `CAM.py`.
+- *vgg.py* is used for Caltech-256 or other nature image dataset. Directories are setup in file `configvgg.py`.
 
 
 ## Results
@@ -43,30 +43,30 @@ Class activation map of same image for different classes
   
       - Training
   
-         *`config.vgg_dir`* - directory of pre-trained VGG19 parameters
+         `config.vgg_dir` - directory of pre-trained VGG19 parameters
        
-         *`config.data_dir`* - directory of training image data
+         `config.data_dir` - directory of training image data
        
-         *`config.infer_data_dir`* - directory of the image use for inference class activation map during training (put only one image)
+         `config.infer_data_dir` - directory of the image use for inference class activation map during training (put only one image)
        
-         *`config.checkpoint_dir`* - directory of saving trained model (saved every 100 training steps)
+         `config.checkpoint_dir` - directory of saving trained model (saved every 100 training steps)
        
-         *`config.summary_dir`* - directory of saving summaries (saved every 10 training steps)
+         `config.summary_dir` - directory of saving summaries (saved every 10 training steps)
        
-         *`config.infer_dir`* - directory of saving inference result (saved every 100 training steps)
+         `config.infer_dir` - directory of saving inference result (saved every 100 training steps)
        
       - Testing
       
-         *`config.model_dir`* - directory of trained model parameters
+         `config.model_dir` - directory of trained model parameters
      
-         *`config.test_data_dir`* - directory of testing images
+         `config.test_data_dir` - directory of testing images
        
-         *`config.result_dir`* - directory of saving testing images
+         `config.result_dir` - directory of saving testing images
        
 2. Download dataset and pre-trained VGG parameters
  
-    - Download [Caltech-256](http://www.vision.caltech.edu/Image_Datasets/Caltech256/) dataset and put it in *`config.data_dir`*
-    - Download pre-trained VGG19 model [here](https://github.com/machrisaa/tensorflow-vgg#tensorflow-vgg16-and-vgg19) and put it in *`config.vgg_dir`*.
+    - Download [Caltech-256](http://www.vision.caltech.edu/Image_Datasets/Caltech256/) dataset and put it in `config.data_dir`
+    - Download pre-trained VGG19 model [here](https://github.com/machrisaa/tensorflow-vgg#tensorflow-vgg16-and-vgg19) and put it in `config.vgg_dir`.
        
 ## Train and test on Caltech-256:
 
@@ -85,16 +85,16 @@ python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME --label I
 
 **INFER_CLASS_LABEL** is the label of the class used to generate the inference class activation map.
 
-- The scaled class activation map will be saved in *`config.result_dir`* along with a .mat file containing raw data of the map.
+- The scaled class activation map will be saved in `config.result_dir` along with a .mat file containing raw data of the map.
 - If batch size is greater than 1, the result images of one mini batch will be save as one image.  
-- **Batch size has to be one during testing if the testing images have different size.** Or you can resize the images to 224 x 224 by uncomment *`resize = 224,`* (line 83). Please refer to the code comments for more detailed parameters setting.  
+- **Batch size has to be one during testing if the testing images have different size.** Or you can resize the images to 224 x 224 by uncomment `resize = 224,` (line 83). Please refer to the code comments for more detailed parameters setting.  
 
 
 ## Train and test on your own dataset:
 
 Dataset requirement:
 
-  1. Put training image in *`config.data_dir`*. Image of different classes are in different folders. Uncomment print(dataset_train.label_dict) to check the image class label and the corresponding label index for training and testing.
+  1. Put training image in `config.data_dir`. Image of different classes are in different folders. Uncomment print(dataset_train.label_dict) to check the image class label and the corresponding label index for training and testing.
   2. The images have to be color images with 3 channels.
   3. May not work well on low resolution images, since all the images will be rescaled to 224 x 224 for training.
  
