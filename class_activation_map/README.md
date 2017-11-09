@@ -18,7 +18,7 @@
 
 - CAM of Caltech-256 dataset is obtained by finetuning [VGG19](https://arxiv.org/abs/1409.1556).
 - CAM models are defined in `CAM.py`.
-- *vgg.py* is used for Caltech-256 or other nature image dataset. Directories are setup in file `configvgg.py`.
+- `vgg.py` is used for Caltech-256 or other nature image dataset. Directories are setup in file `configvgg.py`.
 
 
 ## Results
