@@ -12,9 +12,9 @@ branches:
   - master
 script:
   - flake8 lib/dataflow/ lib/model/ --ignore=F405,F403,F401,E402,E501
-  - coverage run --source=. --omit=*vgg.py test/test_cam.py
-  - coverage run --source=. --omit=*vgg.py test/test_gradcam.py
-  - coverage run --source=. --omit=*vgg.py test/test_guided_backprop.py
+  - COVERAGE_FILE=.coverage_cam coverage run --source=. --omit=*vgg.py test/test_cam.py
+  - COVERAGE_FILE=.coverage_gradcam coverage run --source=. --omit=*vgg.py test/test_gradcam.py
+  - COVERAGE_FILE=.coverage_guidedback coverage run --source=. --omit=*vgg.py test/test_guided_backprop.py
   # - coverage run --source=. test/test.py
   - coverage combine
 after_success:
