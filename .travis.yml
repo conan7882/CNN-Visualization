@@ -10,13 +10,19 @@ install:
 branches:
   only:
   - master
+env:
+  - TESTCASE=test/test_cam.py
+  - TESTCASE=test/test_gradcam.py
+  - TESTCASE=test/test_guided_backprop.py
 script:
-  - flake8 lib/dataflow/ lib/model/ --ignore=F405,F403,F401,E402,E501
-  - COVERAGE_FILE=.coverage_cam coverage run --source=. --omit=*vgg.py test/test_cam.py
-  - COVERAGE_FILE=.coverage_gradcam coverage run --source=. --omit=*vgg.py test/test_gradcam.py
-  - COVERAGE_FILE=.coverage_guidedback coverage run --source=. --omit=*vgg.py test/test_guided_backprop.py
-  # - coverage run --source=. test/test.py
+  - nosetests $TESTCASE --with-coverage --cover-package=zappa --with-timer
   - coverage combine --append
+  # - flake8 lib/dataflow/ lib/model/ --ignore=F405,F403,F401,E402,E501
+  # - COVERAGE_FILE=.coverage_cam coverage run --source=. --omit=*vgg.py test/test_cam.py
+  # - COVERAGE_FILE=.coverage_gradcam coverage run --source=. --omit=*vgg.py test/test_gradcam.py
+  # - COVERAGE_FILE=.coverage_guidedback coverage run --source=. --omit=*vgg.py test/test_guided_backprop.py
+  # # - coverage run --source=. test/test.py
+  # - coverage combine --append
 after_success:
   - coveralls
   # - codecov
