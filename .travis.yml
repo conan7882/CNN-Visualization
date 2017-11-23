@@ -10,10 +10,10 @@ install:
 branches:
   only:
   - master
-env:
-  - TESTCASE=test/test_cam.py
-  - TESTCASE=test/test_gradcam.py
-  - TESTCASE=test/test_guided_backprop.py
+# env:
+#   - TESTCASE=test/test_cam.py
+#   - TESTCASE=test/test_gradcam.py
+#   - TESTCASE=test/test_guided_backprop.py
 script:
   - nosetests ./test --with-coverage --cover-package=.
   # - coverage combine --append
