@@ -16,7 +16,7 @@ script:
   - COVERAGE_FILE=.coverage_gradcam coverage run --source=. --omit=*vgg.py test/test_gradcam.py
   - COVERAGE_FILE=.coverage_guidedback coverage run --source=. --omit=*vgg.py test/test_guided_backprop.py
   # - coverage run --source=. test/test.py
-  - coverage combine
+  - coverage combine --append
 after_success:
   - coveralls
   # - codecov
