@@ -69,17 +69,19 @@ Class activation map of same image for different classes
        
 ## Train and test on Caltech-256:
 
+Go to `CNN-Visualization/example/`, then
+
 Finetuning pre-trained VGG19 for Caltech-256:
 
 ```
-python vgg.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL
+python cam.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL
 ```	
 
 
 Generate the class activation map using trained parameters
 
 ```	  
-python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME --label INFER_CLASS_LABEL
+python cam.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME --label INFER_CLASS_LABEL
 ```
 
 **INFER_CLASS_LABEL** is the label of the class used to generate the inference class activation map.
@@ -90,6 +92,8 @@ python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME --label I
 
 
 ## Train and test on your own dataset:
+
+Go to `CNN-Visualization/example/`, then
 
 Dataset requirement:
 
@@ -103,14 +107,14 @@ Finetuning pre-trained VGG19 for your own dataset:
    - The number of image classes and image file type needs to be specified:
 
 ```
-python vgg.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL --nclass NUM_IMAGE_CLASS\
+python cam.py --train --bsize BATCH_SIZE --label INFER_CLASS_LABEL --nclass NUM_IMAGE_CLASS\
 --type IMAGE_FILE_EXTENSION(start with '.')
 ```	
 
 Generate the class activation map using trained parameters
 
 ```	  
-python vgg.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME --label INFER_CLASS_LABEL\
+python cam.py --prediction --bsize BATCH_SIZE --model SAVED_MODEL_NAME --label INFER_CLASS_LABEL\
 --type IMAGE_FILE_EXTENSION(start with '.')
 ```
 
