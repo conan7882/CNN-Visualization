@@ -17,7 +17,7 @@ if __name__ == '__main__':
     image = tf.placeholder(tf.float32, shape=[None, None, None, 3])
     # initialize input dataflow
     # change '.png' to other image types if other types of images are used
-    input_im = ImageFromFile('.png', data_dir=IM_PATH,
+    input_im = ImageFromFile('.png', data_dir=IMPATH,
                              num_channel=3, shuffle=False)
     # batch size has to be one
     input_im.set_batch_size(1)

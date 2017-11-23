@@ -17,9 +17,6 @@ from models.grad_cam import ClassifyGradCAM
 from utils.viz import image_weight_mask
 
 
-IM_PATH = '../data/'
-SAVE_DIR = '../../data/tmp/'
-
 if __name__ == '__main__':
 
     # merge several output images in one large image
@@ -54,7 +51,7 @@ if __name__ == '__main__':
 
     # initialize input dataflow
     # change '.png' to other image types if other types of images are used
-    input_im = ImageFromFile('.png', data_dir=IM_PATH,
+    input_im = ImageFromFile('.png', data_dir=IMPATH,
                              num_channel=3, shuffle=False)
     input_im.set_batch_size(1)
 
