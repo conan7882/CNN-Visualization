@@ -5,6 +5,7 @@
 
 # import argparse
 from collections import namedtuple
+import tensorflow as tf
 
 from tensorcv.dataflow.image import ImageLabelFromFolder
 from tensorcv.callbacks import *
