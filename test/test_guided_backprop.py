@@ -7,7 +7,7 @@ import tensorflow as tf
 
 from tensorcv.dataflow.image import ImageFromFile
 
-import setup_test_env
+from setup_test_env import *
 from nets.vgg import VGG19_FCN
 from models.guided_backpro import GuideBackPro
 

@@ -14,7 +14,7 @@ from tensorcv.predicts.config import PridectConfig
 from tensorcv.predicts.simple import SimpleFeedPredictor
 from tensorcv.predicts import *
 
-import setup_test_env
+from setup_test_env import *
 from models.cam import VGGCAM
 
 configpath = namedtuple('CONFIG_PATH', ['summary_dir'])

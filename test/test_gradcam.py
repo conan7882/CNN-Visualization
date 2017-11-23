@@ -10,7 +10,7 @@ import numpy as np
 from tensorcv.dataflow.image import ImageFromFile
 from tensorcv.utils.viz import image_overlay
 
-import setup_test_env
+from setup_test_env import *
 from nets.vgg import VGG19_FCN
 from models.guided_backpro import GuideBackPro
 from models.grad_cam import ClassifyGradCAM
