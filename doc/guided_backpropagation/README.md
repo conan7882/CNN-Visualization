@@ -30,7 +30,7 @@
 
 ## Preparation
 
-1. Setup directories in file *CNN-Visualization/guidedbackpro.py*. 
+1. Setup directories in file `CNN-Visualization/example/guided_backpropagation.py`. 
   
     - `IM_PATH` - directory of testing image data
     - `VGG_PATH` - directory of pre-trained VGG19 parameters
@@ -53,10 +53,10 @@
 
 ## Run Script:
 
-To get the guided backpropagation maps for all the image in `IM_PATH`, just run:
+To get the guided backpropagation maps for all the image in `IM_PATH`, go to `CNN-Visualization/example/` and run:
 
 ```
-python guidedbackpro.py
+python guided_backpropagation.py
 ```	
 
 - Results will be saved in `SAVE_DIR` as **map_IDX_class_PREDICT_LABEL.png**.   
