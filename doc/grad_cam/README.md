@@ -35,7 +35,7 @@ Compare with CAM using the same images (Caltech-256) (CAM result can be found [h
 
 ## Preparation
 
-1. Setup directories in file *CNN-Visualization/guidedbackpro.py*. 
+1. Setup directories in file `CNN-Visualization/example/gradcam.py`. 
   
     - *`IM_PATH`* - directory of testing image data
     - *`VGG_PATH`* - directory of pre-trained VGG19 parameters
@@ -43,19 +43,19 @@ Compare with CAM using the same images (Caltech-256) (CAM result can be found [h
    
 2. Download the pre-trained VGG parameters
        
-    - Download pre-trained VGG19 model [here](https://github.com/machrisaa/tensorflow-vgg#tensorflow-vgg16-and-vgg19) and put it in *`VGG_PATH`*.
+    - Download pre-trained VGG19 model [here](https://github.com/machrisaa/tensorflow-vgg#tensorflow-vgg16-and-vgg19) and put it in `VGG_PATH`.
          
        
 3. Testing images
  
-    - Put testing images in *`IM_PATH`* .
-    - Set class labels on line 48 in *CNN-Visualization/gradcam.py*. For example the setting below will generate Grad-CAM and Guided Grad-CAM for class 55 (llama), 543 (dumbbell), 605 (iPod) and 515 (hat). More labels for ImageNet1000 can be found [here](https://github.com/conan7882/VGG-tensorflow/blob/master/imageNetLabel.txt).
+    - Put testing images in `IM_PATH`.
+    - Set class labels on line 56 in `CNN-Visualization/example/gradcam.py`. For example, the setting below will generate Grad-CAM and Guided Grad-CAM for class 55 (llama), 543 (dumbbell), 605 (iPod) and 515 (hat). More labels for ImageNet1000 can be found [here](https://github.com/conan7882/VGG-tensorflow/blob/master/imageNetLabel.txt).
     
       ```
       class_id = [355, 543, 605, 515]
       ```
     
-    - Change image type to the corresponding type in the function below (line 73 in *CNN-Visualization/gradcam.py*) if testing images are not jpeg files.
+    - Change image type to the corresponding type in the function below (line 84 in `CNN-Visualization/example/gradcam.py`) if testing images are not jpeg files.
     
       ```
       input_im = ImageFromFile('.jpg', data_dir=IM_PATH, num_channel=3, shuffle=False)
@@ -64,14 +64,14 @@ Compare with CAM using the same images (Caltech-256) (CAM result can be found [h
 
 ## Run Script:
 
-To get the Grad-CAM maps for all the image in *`IM_PATH`*, just run:
+To get the Grad-CAM maps for all the image in `IM_PATH`, go to `CNN-Visualization/example/` and run:
 
 ```
 python gradcam.py
 ```	
 
 - All the test images will be rescaled to smallest side = 224 before feed into VGG19.
-- Grad-CAM and Guided Grad-CAM will be saved in *`SAVE_DIR`* as **gradcam_IDX_class_CLASSLABEL.png** and **guided_gradcam_IDX_class_CLASSLABEL.png** 
+- Grad-CAM and Guided Grad-CAM will be saved in `SAVE_DIR` as **gradcam_IDX_class_CLASSLABEL.png** and **guided_gradcam_IDX_class_CLASSLABEL.png** 
 
 
 ## Author
