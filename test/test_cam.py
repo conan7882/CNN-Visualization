@@ -3,7 +3,7 @@
 # File: test_cam.py
 # Author: Qian Ge <geqian1001@gmail.com>
 
-import argparse
+# import argparse
 from collections import namedtuple
 
 from tensorcv.dataflow.image import ImageLabelFromFolder
@@ -83,25 +83,30 @@ def get_config(FLAGS):
 #         default_dirs=config_path)
 
 
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--bsize', default=1, type=int)
-    parser.add_argument('--label', default=-1, type=int,
-                        help='Label of inspect class.')
-    parser.add_argument('--nclass', default=1, type=int,
-                        help='number of image class')
+# def get_args():
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument('--bsize', default=1, type=int)
+#     parser.add_argument('--label', default=-1, type=int,
+#                         help='Label of inspect class.')
+#     parser.add_argument('--nclass', default=1, type=int,
+#                         help='number of image class')
 
-    parser.add_argument('--type', default='.jpg', type=str,
-                        help='image type for training and testing')
+#     parser.add_argument('--type', default='.jpg', type=str,
+#                         help='image type for training and testing')
 
-    parser.add_argument('--model', type=str,
-                        help='file name of the trained model')
+#     parser.add_argument('--model', type=str,
+#                         help='file name of the trained model')
 
-    return parser.parse_args()
+#     return parser.parse_args()
 
 
 def test_cam():
-    FLAGS = get_args()
+    FLAGS.bsize = 1
+    FLAGS.lab  = -1
+    FLAGS.nclass = 1
+    FLAGS.type = '.jpg'
+
+    # FLAGS = get_args()
     config = get_config(FLAGS)
     SimpleFeedTrainer(config).train()
     #
