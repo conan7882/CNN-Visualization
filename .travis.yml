@@ -15,7 +15,7 @@ branches:
 #   - TESTCASE=test/test_gradcam.py
 #   - TESTCASE=test/test_guided_backprop.py
 script:
-  - nosetests test/ --with-coverage --cover-package=. --debug=show
+  - nosetests --with-coverage --cover-package=. --debug=show test/ 
   # - coverage combine --append
   # - flake8 lib/dataflow/ lib/model/ --ignore=F405,F403,F401,E402,E501
   # - COVERAGE_FILE=.coverage_cam coverage run --source=. --omit=*vgg.py test/test_cam.py
