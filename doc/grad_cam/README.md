@@ -14,7 +14,7 @@
 
 <!--- For MNIST dataset, a CNN with three convolutional layers followed by a global average pooling layer is used.-->
 
-- [VGG19](https://arxiv.org/abs/1409.1556) is used for visualization. The model is defined in *CNN-Visualization/common/models/VGG.py*.
+- [VGG19](https://arxiv.org/abs/1409.1556) is used for visualization. The model is defined in [`CNN-Visualization/common/models/VGG.py`](../lib/net/vgg.py).
 - Grad-CAM model is defined in *CNN-Visualization/grad_cam/gradCAM*.
 - Main function is in *CNN-Visualization/gradcam.py*.
 
