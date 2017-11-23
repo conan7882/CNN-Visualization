@@ -8,4 +8,4 @@ sys.path.append('lib/')
 
 IMPATH = 'data/'
 CLASS_IMPATH = 'data/class_test/'
-SAVE_DIR = '../data/tmp/'
+SAVE_DIR = 'data/'

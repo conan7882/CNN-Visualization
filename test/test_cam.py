@@ -18,7 +18,7 @@ from setup_test_env import *
 from models.cam import VGGCAM
 
 configpath = namedtuple('CONFIG_PATH', ['summary_dir'])
-config_path = configpath(summary_dir='../../data/tmp/')
+config_path = configpath(summary_dir=SAVE_DIR)
 
 NUM_CHANNEL = 3
 
@@ -50,7 +50,7 @@ def get_config(FLAGS):
         callbacks=training_callbacks,
         batch_size=FLAGS.bsize,
         max_epoch=1,
-        summary_periodic=1,
+        # summary_periodic=1,
         default_dirs=config_path)
 
 
