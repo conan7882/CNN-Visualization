@@ -101,54 +101,6 @@ class BaseCAM(BaseModel):
                                             [o_height, o_width],
                                             name='result')
 
-
-class mnistCAM(BaseCAM):
-    """ for simple images like mnist """
-
-    def _create_conv(self, input_im):
-        arg_scope = tf.contrib.framework.arg_scope
-        with arg_scope([conv], nl=tf.nn.relu,
-                       init_w=tf.truncated_normal_initializer(stddev=0.002)):
-
-            conv1_1 = conv(input_im, 3, 32, 'conv1_1')
-            conv1_2 = conv(conv1_1, 3, 32, 'conv1_2')
-            pool1 = max_pool(conv1_2, 'pool1', padding='VALID')
-
-            conv2_1 = conv(pool1, 3, 64, 'conv2_1')
-            conv2_2 = conv(conv2_1, 3, 64, 'conv2_2')
-            pool2 = max_pool(conv2_2, 'pool2', padding='VALID')
-
-        return pool2
-
-    def _create_model(self):
-
-        input_im = self.model_input[0]
-        # keep_prob = self.model_input[1]
-
-        conv_cam = self._create_conv(input_im)
-        conv_cam = conv(conv_cam, 3, 128, 'conv_cam', nl=tf.nn.relu, wd=0.01)
-
-        gap = global_avg_pool(conv_cam)
-        # dropout_gap = dropout(gap, keep_prob, self.is_training)
-
-        with tf.variable_scope('cam'):
-            # init = tf.truncated_normal_initializer(stddev = 0.01)
-            init = tf.truncated_normal_initializer(stddev=0.002)
-            fc_w = new_weights(
-                'weights', 0,
-                [gap.get_shape().as_list()[-1], self._num_class],
-                initializer=init, wd=0.01)
-            fc1 = tf.matmul(gap, fc_w, name='output')
-
-        self.output = tf.identity(fc1, 'model_output')
-        self.prediction = tf.argmax(fc1, name='pre_label', axis=-1)
-        self.prediction_pro = tf.nn.softmax(fc1, name='pre_pro')
-
-        if self._inspect_class is not None:
-            with tf.name_scope('classmap'):
-                self.get_classmap(self._inspect_class, conv_cam, input_im)
-
-
 class VGGCAM(BaseCAM):
     def __init__(self, num_class=1000,
                  inspect_class=None,
