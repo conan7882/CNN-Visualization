@@ -17,9 +17,8 @@
 <!--- For MNIST dataset, a CNN with three convolutional layers followed by a global average pooling layer is used.-->
 
 - CAM of Caltech-256 dataset is obtained by finetuning [VGG19](https://arxiv.org/abs/1409.1556).
-- CAM models are defined in *CAM.py*.
-- *vgg.py* is used for Caltech-256 or other nature image dataset. Directories are setup in file *configvgg.py*.
-
+- CAM models are defined in [`CNN-Visualization/models/cam.py`](../../models/cam.py).
+- Exampe usage of CAM is in [`CNN-Visualization/example/cam.py`](../../example/cam.py) (used for  Caltech-256 or other nature image dataset.). Directories are setup in file [`CNN-Visualization/example/config_cam.py`](../../example/config_cam.py).
 
 ## Results
 <!--- ### MNIST-->
