@@ -100,7 +100,7 @@ def get_args():
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+def test_cam():
     FLAGS = get_args()
     config = get_config(FLAGS)
     SimpleFeedTrainer(config).train()

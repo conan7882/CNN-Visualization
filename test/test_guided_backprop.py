@@ -12,7 +12,7 @@ from nets.vgg import VGG19_FCN
 from models.guided_backpro import GuideBackPro
 
 
-if __name__ == '__main__':
+def test_guided_backprop():
     # placeholder for input image
     image = tf.placeholder(tf.float32, shape=[None, None, None, 3])
     # initialize input dataflow

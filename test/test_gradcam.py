@@ -17,7 +17,7 @@ from models.grad_cam import ClassifyGradCAM
 from utils.viz import image_weight_mask
 
 
-if __name__ == '__main__':
+def test_gradcam():
 
     # merge several output images in one large image
     merge_im = 1
