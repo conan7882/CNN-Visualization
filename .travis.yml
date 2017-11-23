@@ -25,4 +25,4 @@ script:
   # - coverage combine --append
 after_success:
   - coveralls
-  # - codecov
+  - codecov
