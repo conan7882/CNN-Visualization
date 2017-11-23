@@ -14,7 +14,7 @@
 <!--- For MNIST dataset, a CNN with three convolutional layers followed by a global average pooling layer is used.-->
 
 - [VGG19](https://arxiv.org/abs/1409.1556) is used for visulization. The model is defined in [`CNN-Visualization/lib/nets/vgg.py`](../../lib/nets/vgg.py).
-- Guided backpropagation copmutation class is defined in [`CNN-Visualization/lib/models/guided_backpro.py`](../../lib/models.guided_backpro.py).
+- Guided backpropagation copmutation class is defined in [`CNN-Visualization/lib/models/guided_backpro.py`](../../lib/models/guided_backpro.py).
 - Example usage is in [`CNN-Visualization/example/guided_backpropagation.py`](../../example/guided_backpropagation.py).
 
 
