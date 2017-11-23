@@ -4,6 +4,8 @@
 # Author: Qian Ge <geqian1001@gmail.com>
 
 import sys
-sys.path.append('../lib/')
+sys.path.append('lib/')
 
-IMPATH = '../data/'
+IMPATH = 'data/'
+CLASS_IMPATH = 'data/class_test/'
+SAVE_DIR = '../data/tmp/'

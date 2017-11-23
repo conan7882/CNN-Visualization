@@ -11,9 +11,6 @@ import setup_test_env
 from nets.vgg import VGG19_FCN
 from models.guided_backpro import GuideBackPro
 
-IM_PATH = '../data/'
-SAVE_DIR = '../../data/tmp/'
-
 
 if __name__ == '__main__':
     # placeholder for input image

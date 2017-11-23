@@ -21,13 +21,12 @@ configpath = namedtuple('CONFIG_PATH', ['summary_dir'])
 config_path = configpath(summary_dir='../../data/tmp/')
 
 NUM_CHANNEL = 3
-DATA_DIR = '../data/class_test/'
 
 
 def get_config(FLAGS):
     # data for training
     dataset_train = ImageLabelFromFolder(FLAGS.type,
-                                         data_dir=DATA_DIR,
+                                         data_dir=CLASS_IMPATH,
                                          num_class=FLAGS.nclass,
                                          resize=224,
                                          num_channel=NUM_CHANNEL)
@@ -62,7 +61,7 @@ def get_config(FLAGS):
 #                                  resize=224,
 #                                  num_channel=NUM_CHANNEL)
 #     # dataset_test = ImageLabelFromFolder('.jpg',
-#     #                     data_dir = DATA_DIR,
+#     #                     data_dir = CLASS_IMPATH,
 #     #                     num_class = FLAGS.nclass,
 #     #                     resize = 224,
 #     #                     num_channel = NUM_CHANNEL)
