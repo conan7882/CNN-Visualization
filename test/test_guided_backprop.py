@@ -41,3 +41,5 @@ def test_guided_backprop():
                      model.input_im],
                      feed_dict={image: im})
         print(label)
+    tf.reset_default_graph()
+

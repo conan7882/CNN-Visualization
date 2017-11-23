@@ -107,6 +107,7 @@ def test_cam():
     # FLAGS = get_args()
     config = get_config(FLAGS)
     SimpleFeedTrainer(config).train()
+    tf.reset_default_graph()
     #
     # if FLAGS.train:
     #     config = get_config(FLAGS)
