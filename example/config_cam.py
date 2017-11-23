@@ -5,7 +5,7 @@
 vgg_dir = '../../data/pretrain/vgg/vgg19.npy'
 
 # directory of training data
-data_dir = '../data/dataset/256_ObjectCategories/256_ObjectCategories/'
+data_dir = '../../data/dataset/256_ObjectCategories/'
 
 # directory of testing data
 test_data_dir = '../data/'
@@ -27,7 +27,3 @@ model_dir = '../../data/tmp/'
 
 # directory for saving prediction results
 result_dir = '../../data/tmp/'
-
-
-
-
