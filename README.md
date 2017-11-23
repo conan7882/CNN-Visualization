@@ -19,13 +19,13 @@
 - Grad-CAM generates similar class heatmap as CAM, but it does not require to re-train the model for visualizatin.
 - Details of the implementation and more results can be find [here](https://github.com/conan7882/CNN-Visualization/tree/master/grad_cam). Some results:
 
-![grad-cam-result](grad_cam/figs/ex1.png)
+![grad-cam-result](doc/grad_cam/figs/ex1.png)
 
 ## Class Activation Mapping (CAM)
 - The class activation map highlights the most informative image regions relevant to the predicted class. This map can be obtained by adding a global average pooling layer at the end of convolutional layers.
 - Details of the implementation and more results can be find [here](https://github.com/conan7882/CNN-Visualization/tree/master/class_activation_map). Some results:
 
-![celtech_change](class_activation_map/figs/celtech_diff.png)
+![celtech_change](doc/cam/figs/celtech_diff.png)
 
 
 ## Guided back propagation
@@ -33,7 +33,7 @@
 
 - Details of the implementation and more results can be find [here](https://github.com/conan7882/CNN-Visualization/tree/master/Guided_Backpropagation). Some results:
 
-![gbp](Guided_Backpropagation/figs/gbp.png)
+![gbp](doc/guided_backpropagation/figs/gbp.png)
 
 
 
