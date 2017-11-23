@@ -101,10 +101,8 @@ def get_config(FLAGS):
 
 
 def test_cam():
-    FLAGS.bsize = 1
-    FLAGS.lab  = -1
-    FLAGS.nclass = 1
-    FLAGS.type = '.jpg'
+    inargs = namedtuple('IN_ARGS', ['bsize', 'label', 'nclass', 'type'])
+    FLAGS = inargs(bsize=1, label=-1, nclass=1, type='.jpg')
 
     # FLAGS = get_args()
     config = get_config(FLAGS)
