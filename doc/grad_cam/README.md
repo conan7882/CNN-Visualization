@@ -37,9 +37,9 @@ Compare with CAM using the same images (Caltech-256) (CAM result can be found [h
 
 1. Setup directories in file `CNN-Visualization/example/gradcam.py`. 
   
-    - *`IM_PATH`* - directory of testing image data
-    - *`VGG_PATH`* - directory of pre-trained VGG19 parameters
-    - *`SAVE_DIR`* - directory of saving result images
+    - `IM_PATH` - directory of testing image data
+    - `VGG_PATH` - directory of pre-trained VGG19 parameters
+    - `SAVE_DIR` - directory of saving result images
    
 2. Download the pre-trained VGG parameters
        
