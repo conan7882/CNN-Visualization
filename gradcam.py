@@ -11,9 +11,13 @@ from common.models import VGG
 from grad_cam.gradCAM import ClassifyGradCAM
 from Guided_Backpropagation.guideBackpro import GuideBackPro
 
-IM_PATH = 'E:\\GITHUB\\workspace\\CNN\\dataset\\test5\\'
-VGG_PATH = 'E:\\GITHUB\\workspace\\CNN\\pretrained\\vgg19.npy'
-SAVE_DIR = 'E:\\GITHUB\\workspace\\CNN\\test\\'
+# IM_PATH = 'E:\\GITHUB\\workspace\\CNN\\dataset\\test5\\'
+# VGG_PATH = 'E:\\GITHUB\\workspace\\CNN\\pretrained\\vgg19.npy'
+# SAVE_DIR = 'E:\\GITHUB\\workspace\\CNN\\test\\'
+
+IM_PATH = 'data/'
+SAVE_DIR = '../data/tmp/'
+VGG_PATH = '../data/pretrain/vgg/vgg19.npy'
 
 def image_weight_mask(image, mask):
     """
@@ -45,7 +49,7 @@ if __name__ == '__main__':
     # class label for Grad-CAM generation
     # 355 llama 543 dumbbell 605 iPod 515 hat 99 groose 283 tiger cat
     # 282 tabby cat 233 border collie
-    class_id = [355, 543, 605, 515]
+    class_id = [282, 283]
 
     # initialize Grad-CAM 
     # using VGG19
@@ -70,7 +74,7 @@ if __name__ == '__main__':
     back_pro_op = gbackprob.get_visualization(image) 
 
     # initialize input dataflow
-    input_im = ImageFromFile('.jpg', data_dir=IM_PATH, 
+    input_im = ImageFromFile('.png', data_dir=IM_PATH, 
                              num_channel=3, shuffle=False)
     input_im.set_batch_size(1)
 
