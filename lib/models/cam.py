@@ -87,7 +87,7 @@ class BaseCAM(BaseModel):
         with tf.variable_scope('cam') as scope:
             scope.reuse_variables()
             label_w = tf.gather(
-                          tf.transpose(tf.get_variable('weights')), label)
+                tf.transpose(tf.get_variable('weights')), label)
             label_w = tf.reshape(label_w, [-1, conv_out_channel, 1])
             label_w = tf.tile(label_w, [tf.shape(conv_out)[0], 1, 1])
 

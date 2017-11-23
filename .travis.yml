@@ -1,0 +1,21 @@
+language: python
+python: 
+  - "3.4"
+install:
+  - pip install -r requirements.txt
+  - pip install flake8
+  - pip install coveralls
+  - pip install tensorflow
+  - pip install -U git+https://github.com/conan7882/DeepVision-tensorflow.git
+branches:
+  only:
+  - master
+script:
+  - flake8 lib/dataflow/ lib/model/ --ignore=F405,F403,F401,E402,E501
+  - coverage run --source=. --omit=*vgg.py test/test_cam.py
+  - coverage run --source=. --omit=*vgg.py test/test_gradcam.py
+  - coverage run --source=. --omit=*vgg.py test/test_guided_backprop.py
+  # - coverage run --source=. test/test.py
+after_success:
+  - coveralls
+  # - codecov

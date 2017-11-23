@@ -83,4 +83,3 @@ if __name__ == '__main__':
                 overlay_im_list = [[] for i in range(len(gcam_class_id))]
                 weight_im_list[idx].append(weight_im)
                 overlay_im_list[idx].append(overlay_im)
-            

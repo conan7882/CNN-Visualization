@@ -5,6 +5,7 @@
 
 import numpy as np
 
+
 def image_weight_mask(image, mask):
     """
     Args:

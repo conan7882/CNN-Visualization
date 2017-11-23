@@ -23,6 +23,7 @@ config_path = configpath(summary_dir='../../data/tmp/')
 NUM_CHANNEL = 3
 DATA_DIR = '../data/class_test/'
 
+
 def get_config(FLAGS):
     # data for training
     dataset_train = ImageLabelFromFolder(FLAGS.type,
@@ -33,7 +34,6 @@ def get_config(FLAGS):
 
     # Print image class name and label
     # print(dataset_train.label_dict)
-
 
     training_callbacks = [
         # TrainSummary(key='train', periodic=1),
@@ -105,7 +105,7 @@ if __name__ == '__main__':
     FLAGS = get_args()
     config = get_config(FLAGS)
     SimpleFeedTrainer(config).train()
-    # 
+    #
     # if FLAGS.train:
     #     config = get_config(FLAGS)
     #     SimpleFeedTrainer(config).train()

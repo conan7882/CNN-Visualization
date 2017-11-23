@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
     # get op to compute guided back propagation map
     # final output respect to input image
-    back_pro_op = model.get_visualization(image)  
+    back_pro_op = model.get_visualization(image)
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
