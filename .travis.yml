@@ -15,7 +15,7 @@ env:
   - TESTCASE=test/test_gradcam.py
   - TESTCASE=test/test_guided_backprop.py
 script:
-  - nosetests $TESTCASE --with-coverage --cover-package=zappa --with-timer
+  - nosetests $TESTCASE --with-coverage --cover-package=zappa
   - coverage combine --append
   # - flake8 lib/dataflow/ lib/model/ --ignore=F405,F403,F401,E402,E501
   # - COVERAGE_FILE=.coverage_cam coverage run --source=. --omit=*vgg.py test/test_cam.py
