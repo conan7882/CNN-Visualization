@@ -14,9 +14,9 @@
 <!--- ### MNIST-->
 
 ### GoogLeNet
-
-
-![GoogLeNet](figs/GoogLeNet.png =250x)
+<p align = 'left'>
+<img src ="figs/GoogLeNet.png" height="250" />
+</p>
 
 
 
@@ -26,7 +26,7 @@
 ### Download pre-trained model
 Download the pre-trained parameters [here](http://www.deeplearningmodel.net/).
 ### Config path
-All directories are setup in [`example/setup_env.py`](../example/config_path.py).
+All directories are setup in [`example/setup_env.py`](../../example/config_path.py).
 
 - `googlenet_path` is the path of the pre-trained model.
 - `save_path` is the directory to save filter image. 
