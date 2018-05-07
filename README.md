@@ -14,9 +14,15 @@
 
 ## Algorithms 
 
+- [Visulization of the first layer filters](https://github.com/conan7882/CNN-Visualization/tree/master/doc/firstfilter#visualization-of-first-layer-filters)
 - [Gradient-weighted Class Activation Mapping (Grad-CAM)](https://github.com/conan7882/CNN-Visualization/tree/master/doc/grad_cam#gradient-weighted-class-activation-mapping-grad-cam) (ICCV 17)
 - [Class Activation Mapping (CAM)](https://github.com/conan7882/CNN-Visualization/tree/master/doc/cam#class-activation-mapping-cam) (CVPR 16)
 - [Guided back propagation](https://github.com/conan7882/CNN-Visualization/tree/master/doc/guided_backpropagation#guided-backpropagation) (2014)
+
+## First layer filters
+<p align = 'left'>
+<img src ="doc/firstfilter/figs/GoogLeNet.png" height="250" />
+</p>
 
 ## Gradient-weighted Class Activation Mapping (Grad-CAM)
 - Grad-CAM generates similar class heatmap as CAM, but it does not require to re-train the model for visualizatin.
