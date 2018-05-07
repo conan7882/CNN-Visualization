@@ -1,6 +1,7 @@
 # Visualization of filters and feature maps of GoogLeNet
 
-- Example of visualization of the first layer filters (7 x 7 x 3 x 64) and feature maps of GoogLeNet.
+- The most straightforward approach to visualize a CNN is to show the feature maps (activations) and filters.
+- Here are some examples of visualization of the first layer filters (7 x 7 x 3 x 64) and feature maps of the pre-trained GoogLeNet.
 
 ## Requirements
 - Python 3.3+
@@ -11,20 +12,25 @@
 <!--- ### MNIST-->
 
 ### First layer fiters (7 x 7 x 3 x 64)
+
+We can see some high-frequency grayscale features as well as some low-frequency color features.
+
 <p align = 'left'>
-<img src ="figs/GoogLeNet_filter.png" height="250" />
+<img src ="figs/GoogLeNet.png" height="250" />
 </p>
 
-### Feature maps
+### Feature maps with ReLU (Randomly choose 100 feature maps to display)
+Each feature map is scale to [0, 1] for better visualization.
+
 - Input image
 <p align = 'left'>
-<img src ="figs/GoogLeNet_inception3a.png" height="300" />
+<img src ="../../data/cat.jpg" height="300" />
 </p>
 
 - Layer 3 (Inception3a and Inception3b)
 <p align = 'left'>
-<img src ="figs/GoogLeNet_inception3a.png" height="300" />
-<img src ="figs/GoogLeNet_inception3b.png" height="300" />
+<img src ="figs/GoogLeNet_inception3a.png" height="320" />
+<img src ="figs/GoogLeNet_inception3b.png" height="320" />
 </p>
 
 - Layer 4 (Inception4a - Inception3e)
@@ -43,7 +49,6 @@
 </p>
 
 
-
 ## Usage
 ### Download pre-trained model
 Download the pre-trained parameters [here](http://www.deeplearningmodel.net/).
@@ -51,6 +56,7 @@ Download the pre-trained parameters [here](http://www.deeplearningmodel.net/).
 All directories are setup in [`example/setup_env.py`](../../example/config_path.py).
 
 - `googlenet_path` is the path of the pre-trained model.
+- `im_path` is the directory of testing image.
 - `save_path` is the directory to save filter image. 
        
 ## Run the code:
@@ -59,7 +65,7 @@ Go to `CNN-Visualization/example/`, then
 
 
 ```
-python vizfilter.py
+python vizfilter.py --feature --filter --im IMAGE_FILENAME
 ```	
 
 Image will be saved in `config.save_path`  
