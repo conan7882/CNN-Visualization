@@ -20,8 +20,6 @@
 
 
 
-## Observations
-
 ## Usage
 ### Download pre-trained model
 Download the pre-trained parameters [here](http://www.deeplearningmodel.net/).
