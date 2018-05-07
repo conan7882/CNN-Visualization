@@ -235,3 +235,51 @@ class VGG19_FCN(VGG19):
         self.output = tf.identity(fc8, 'model_output')
 
         self.avg_output = global_avg_pool(fc8)
+
+
+class BaseVGG19(BaseModel):
+    def _creat_vgg(self, inputs, pre_train_path, is_load=True):
+        VGG_MEAN = [103.939, 116.779, 123.68]
+
+        red, green, blue = tf.split(axis=3, num_or_size_splits=3,
+                                    value=inputs)
+        input_bgr = tf.concat(axis=3, values=[
+            blue - VGG_MEAN[0],
+            green - VGG_MEAN[1],
+            red - VGG_MEAN[2],
+        ])
+
+        data_dict = {}
+        if is_load:
+            data_dict = np.load(pre_train_path,
+                                encoding='latin1').item()
+
+        arg_scope = tf.contrib.framework.arg_scope
+        with arg_scope([conv], nl=tf.nn.relu,
+                       trainable=False, data_dict=data_dict):
+            conv1_1 = conv(input_bgr, 3, 64, 'conv1_1')
+            conv1_2 = conv(conv1_1, 3, 64, 'conv1_2')
+            pool1 = max_pool(conv1_2, 'pool1', padding='SAME')
+
+            conv2_1 = conv(pool1, 3, 128, 'conv2_1')
+            conv2_2 = conv(conv2_1, 3, 128, 'conv2_2')
+            pool2 = max_pool(conv2_2, 'pool2', padding='SAME')
+
+            conv3_1 = conv(pool2, 3, 256, 'conv3_1')
+            conv3_2 = conv(conv3_1, 3, 256, 'conv3_2')
+            conv3_3 = conv(conv3_2, 3, 256, 'conv3_3')
+            conv3_4 = conv(conv3_3, 3, 256, 'conv3_4')
+            pool3 = max_pool(conv3_4, 'pool3', padding='SAME')
+
+            conv4_1 = conv(pool3, 3, 512, 'conv4_1')
+            conv4_2 = conv(conv4_1, 3, 512, 'conv4_2')
+            conv4_3 = conv(conv4_2, 3, 512, 'conv4_3')
+            conv4_4 = conv(conv4_3, 3, 512, 'conv4_4')
+            pool4 = max_pool(conv4_4, 'pool4', padding='SAME')
+
+            conv5_1 = conv(pool4, 3, 512, 'conv5_1')
+            conv5_2 = conv(conv5_1, 3, 512, 'conv5_2')
+            conv5_3 = conv(conv5_2, 3, 512, 'conv5_3')
+            conv5_4 = conv(conv5_3, 3, 512, 'conv5_4')
+
+        return conv5_4
