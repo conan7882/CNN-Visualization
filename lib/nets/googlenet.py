@@ -45,16 +45,19 @@ def inception_layer(inputs,
 
 class BaseGoogLeNet(BaseModel):
     def __init__(self, pre_train_path, is_load=True):
-        inputs = tf.placeholder(tf.float32,
-                                [None, None, None, 3],
-                                name='input')
-        self._creat_googlenet(inputs, pre_train_path, is_load=is_load)
+        self.inputs = tf.placeholder(tf.float32,
+                                     [None, None, None, 3],
+                                     name='input')
+
+        self._creat_googlenet(self.inputs, pre_train_path, is_load=is_load)
 
     def _creat_googlenet(self,
                          inputs,
                          pre_train_path,
                          is_load=True,
                          trainable=True):
+        self.conv_layer = {}
+
         data_dict = {}
         if is_load:
             data_dict = np.load(pre_train_path,
@@ -110,6 +113,16 @@ class BaseGoogLeNet(BaseModel):
                 pool4, 256, 160, 320, 32, 128, 128, name='inception_5a')
             inception5b = inception_layer(
                 inception5a, 384, 192, 384, 48, 128, 128, name='inception_5b')
+
+            self.conv_layer['inception3a'] = inception3a
+            self.conv_layer['inception3b'] = inception3b
+            self.conv_layer['inception4a'] = inception4a
+            self.conv_layer['inception4b'] = inception4b
+            self.conv_layer['inception4c'] = inception4c
+            self.conv_layer['inception4d'] = inception4d
+            self.conv_layer['inception4e'] = inception4e
+            self.conv_layer['inception5a'] = inception5a
+            self.conv_layer['inception5b'] = inception5b
 
         return inception5b
 

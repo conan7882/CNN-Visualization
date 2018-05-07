@@ -6,6 +6,8 @@
 import numpy as np
 import scipy.misc
 
+import lib.utils.normalize as normlize
+
 
 def image_weight_mask(image, mask):
     """
@@ -75,15 +77,26 @@ def image_weight_mask(image, mask):
 
 #     scipy.misc.imsave(save_path, merge_img)
 
-def viz_filters(filters, grid_size, save_path, gap=0):
+def viz_filters(filters,
+                grid_size,
+                save_path,
+                gap=0,
+                gap_color=0,
+                nf=normlize.indentity):
     """ Visualization conv2d filters
 
     Args:
         filters: [size_x, size_y, n_channel, n_features]
+                or [size_x, size_y, n_features]
 
     """
     filters = np.array(filters)
-    assert len(filters.shape) == 4
+    if len(filters.shape) == 4:
+        n_channel = filters.shape[2]
+    elif len(filters.shape) == 3:
+        n_channel = 1
+        filters = np.expand_dims(filters, axis=2)
+    # assert len(filters.shape) == 4
     assert len(grid_size) == 2
 
     h = filters.shape[0]
@@ -91,36 +104,24 @@ def viz_filters(filters, grid_size, save_path, gap=0):
 
     merge_im = np.zeros((h * grid_size[0] + (grid_size[0] + 1) * gap,
                          w * grid_size[1] + (grid_size[1] + 1) * gap,
-                         3))
+                         n_channel)) + gap_color
 
     n_viz_filter = min(filters.shape[-1], grid_size[0] * grid_size[1])
+    pick_id = np.random.permutation(filters.shape[-1])
     for idx in range(0, n_viz_filter):
         i = idx % grid_size[1]
         j = idx // grid_size[1]
+        cur_filter = filters[:, :, :, pick_id[idx]]
         merge_im[j * (h + gap) + gap: j * (h + gap) + h + gap,
                  i * (w + gap) + gap: i * (w + gap) + w + gap, :]\
-            = np.squeeze(norm_filter(filters[:, :, :, idx]))
+            = nf(cur_filter)
+    scipy.misc.imsave(save_path, np.squeeze(merge_im))
 
-    scipy.misc.imsave(save_path, merge_im)
 
-def norm_filter(filter_in):
-    """ Normalization of conv2d filters for visualization
-    https://github.com/jacobgil/keras-filter-visualization/blob/master/utils.py
 
-    Args:
-        filter_in: [size_x, size_y, n_channel]
 
-    """
-    x = filter_in
-    x -= x.mean()
-    x /= (x.std() + 1e-5)
-    # make most of the value between [-0.5, 0.5]
-    x *= 0.1
-    # move to [0, 1]
-    x += 0.5
-    x *= 255
-    x = np.clip(x, 0, 255).astype('uint8')
-    return x
+
+
 
 
 

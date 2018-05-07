@@ -3,6 +3,9 @@
 # File: config_path.py
 # Author: Qian Ge <geqian1001@gmail.com>
 
+# directory of testing images
+im_path = '../data/' 
+
 # foler for saving
 save_path = '/Users/gq/tmp/viz/'
 
