@@ -1,21 +1,45 @@
-# Visualization of first layer filters
+# Visualization of filters and feature maps of GoogLeNet
 
-- Visualization of the first layer filters of GoogLeNet (7 x 7 x 3 x 64)
-
+- Example of visualization of the first layer filters (7 x 7 x 3 x 64) and feature maps of GoogLeNet.
 
 ## Requirements
 - Python 3.3+
 - [Tensorflow 1.3](https://www.tensorflow.org/)
 - [TensorCV](https://github.com/conan7882/DeepVision-tensorflow) 
 
-
-
 ## Results
 <!--- ### MNIST-->
 
-### GoogLeNet
+### First layer fiters (7 x 7 x 3 x 64)
 <p align = 'left'>
-<img src ="figs/GoogLeNet.png" height="250" />
+<img src ="figs/GoogLeNet_filter.png" height="250" />
+</p>
+
+### Feature maps
+- Input image
+<p align = 'left'>
+<img src ="figs/GoogLeNet_inception3a.png" height="300" />
+</p>
+
+- Layer 3 (Inception3a and Inception3b)
+<p align = 'left'>
+<img src ="figs/GoogLeNet_inception3a.png" height="300" />
+<img src ="figs/GoogLeNet_inception3b.png" height="300" />
+</p>
+
+- Layer 4 (Inception4a - Inception3e)
+<p align = 'left'>
+<img src ="figs/GoogLeNet_inception4a.png" height="270" />
+<img src ="figs/GoogLeNet_inception4b.png" height="270" />
+<img src ="figs/GoogLeNet_inception4c.png" height="270" />
+<img src ="figs/GoogLeNet_inception4d.png" height="270" />
+<img src ="figs/GoogLeNet_inception4e.png" height="270" />
+</p>
+
+- Layer 5 (Inception5a and Inception5b)
+<p align = 'left'>
+<img src ="figs/GoogLeNet_inception5a.png" height="250" />
+<img src ="figs/GoogLeNet_inception5b.png" height="250" />
 </p>
 
 
