@@ -19,7 +19,7 @@ We can see some high-frequency grayscale features as well as some low-frequency 
 <img src ="figs/GoogLeNet.png" height="250" />
 </p>
 
-### Feature maps with ReLU (Randomly choose 100 feature maps to display)
+### Feature maps with ReLU (Randomly choose 100 feature maps at each layer for display)
 
 - Input image
 <p align = 'left'>
