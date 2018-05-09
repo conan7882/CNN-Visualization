@@ -7,6 +7,7 @@ import tensorflow as tf
 
 from tensorcv.models.base import BaseModel
 from tensorcv.models.layers import new_weights, global_avg_pool, conv, dropout, max_pool
+from tensorcv.models.layers import batch_norm
 
 from lib.nets.vgg import BaseVGG19
 from lib.nets.googlenet import BaseGoogLeNet
@@ -34,9 +35,10 @@ def mlpconv(inputs, filter_size, hidden_size, wd=0, name='mlpconv'):
 
 
 class GAPNet(BaseModel):
-    def __init__(self, num_class=10, pre_train_path=None):
+    def __init__(self, num_class=10, wd=0):
         self._n_class = num_class
-        self._pre_train_path = pre_train_path
+        self._wd = wd
+        # self._pre_train_path = pre_train_path
 
         self.set_is_training(True)
         self.layer = {}
@@ -49,27 +51,51 @@ class GAPNet(BaseModel):
         self._create_model()
 
     def _create_conv(self, inputs):
+        self.dropout = tf.placeholder(tf.float32, name='dropout')
         mlpconv_1 = mlpconv(
             inputs,
-            filter_size=5,
-            hidden_size=[32, 64],
-            name='mlpconv_1')
-        # pool1 = max_pool(mlpconv_1, 'pool1', padding='SAME')
-        mlpconv_1 = dropout(mlpconv_1, 0.5, self._is_traing)
+            filter_size=8,
+            hidden_size=[96, 96],
+            name='mlpconv_1',
+            wd=self._wd)
+        # mlpconv_1 = mlpconv(
+        #     inputs,
+        #     filter_size=5,
+        #     hidden_size=[192, 160, 96],
+        #     name='mlpconv_1',
+        #     wd=self._wd)
+        mlpconv_1 = max_pool(mlpconv_1, 'pool1', padding='SAME')
+        mlpconv_1 = dropout(mlpconv_1, self.dropout, self._is_traing)
+        mlpconv_1 = batch_norm(mlpconv_1, train=self._is_traing, name='bn_1')
 
         mlpconv_2 = mlpconv(
             mlpconv_1,
-            filter_size=5,
-            hidden_size=[64, 128],
-            name='mlpconv_2')
-        # pool2 = max_pool(mlpconv_2, 'pool2', padding='SAME')
-        mlpconv_2 = dropout(mlpconv_2, 0.5, self._is_traing)
+            filter_size=8,
+            hidden_size=[192, 192],
+            name='mlpconv_2',
+            wd=self._wd)
+        # mlpconv_2 = mlpconv(
+        #     mlpconv_1,
+        #     filter_size=5,
+        #     hidden_size=[192, 192, 192],
+        #     name='mlpconv_2',
+        #     wd=self._wd)
+        mlpconv_2 = max_pool(mlpconv_2, 'pool2', padding='SAME')
+        mlpconv_2 = dropout(mlpconv_2, self.dropout, self._is_traing)
+        mlpconv_2 = batch_norm(mlpconv_2, train=self._is_traing, name='bn_2')
 
         mlpconv_3 = mlpconv(
             mlpconv_2,
             filter_size=5,
-            hidden_size=[128, self._n_class],
-            name='mlpconv_3')
+            hidden_size=[192, self._n_class],
+            name='mlpconv_3',
+            wd=self._wd)
+        # mlpconv_3 = mlpconv(
+        #     mlpconv_2,
+        #     filter_size=3,
+        #     hidden_size=[192, 192, self._n_class],
+        #     name='mlpconv_3',
+        #     wd=self._wd)
         # mlpconv_3 = max_pool(mlpconv_3, 'pool3', padding='SAME')
         # mlpconv_3 = dropout(pool3, 0.5, self._is_traing)
 
@@ -108,6 +134,7 @@ class GAPNet(BaseModel):
 
     def get_train_op(self):
         self.lr = tf.placeholder(tf.float32, name='lr')
+        # opt = tf.train.GradientDescentOptimizer(learning_rate=self.lr)
         opt = tf.train.AdamOptimizer(
             beta1=0.5, learning_rate=self.lr)
         loss = self.get_loss()

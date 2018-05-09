@@ -82,7 +82,8 @@ def viz_filters(filters,
                 save_path,
                 gap=0,
                 gap_color=0,
-                nf=normlize.indentity):
+                nf=normlize.indentity,
+                shuffle=True):
     """ Visualization conv2d filters
 
     Args:
@@ -107,7 +108,10 @@ def viz_filters(filters,
                          n_channel)) + gap_color
 
     n_viz_filter = min(filters.shape[-1], grid_size[0] * grid_size[1])
-    pick_id = np.random.permutation(filters.shape[-1])
+    if shuffle == True:
+        pick_id = np.random.permutation(filters.shape[-1])
+    else:
+        pick_id = range(0, filters.shape[-1])
     for idx in range(0, n_viz_filter):
         i = idx % grid_size[1]
         j = idx // grid_size[1]

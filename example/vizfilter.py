@@ -33,6 +33,7 @@ def get_parse():
 
 if __name__ == '__main__':
     FLAGES = get_parse()
+    
     map_list = ['inception4a', 'inception4b', 'inception4c',
                 'inception4d', 'inception4e', 'inception3a',
                 'inception3b', 'inception5a', 'inception5b']
@@ -41,10 +42,15 @@ if __name__ == '__main__':
     filters = tf.get_default_graph().get_tensor_by_name(
         'conv1_7x7_s2/weights:0')
 
-    feature_map = []
-    for c_map in map_list:
-        feature_map.append(model.conv_layer[c_map])
-    im = scipy.misc.imread(os.path.join(config.im_path, FLAGES.im))
+    if FLAGES.feature:
+        feature_map = []
+        for c_map in map_list:
+            feature_map.append(model.conv_layer[c_map])
+        assert FLAGES.im is not None, 'File name cannot be None!'
+        file_path = os.path.join(config.im_path, FLAGES.im)
+        assert os.path.isfile(file_path),\
+            'File does not exist! {}'.format(file_path)
+        im = scipy.misc.imread(file_path)
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -67,4 +73,5 @@ if __name__ == '__main__':
                     os.path.join(config.save_path, 'GoogLeNet_{}.png'.format(key)),
                     gap=2,
                     gap_color=10,
-                    nf=normlize.norm_range)
+                    # nf=normlize.norm_range
+                    )

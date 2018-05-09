@@ -11,9 +11,16 @@ import numpy as np
 from tensorcv.dataflow.base import RNGDataFlow
 
 
-## TODO Add batch size
 class CIFAR(RNGDataFlow):
-    def __init__(self, data_dir='', shuffle=True, batch_dict_name=None):
+    def __init__(self,
+                 data_dir='',
+                 shuffle=True,
+                 batch_dict_name=None,
+                 data_type='train',
+                 channel_mean=None,
+                 substract_mean=True):
+        self._mean = channel_mean
+        self._substract = substract_mean
         self.num_channels = 3
         self.im_size = [32, 32]
 
@@ -25,10 +32,17 @@ class CIFAR(RNGDataFlow):
             batch_dict_name = [batch_dict_name]
         self._batch_dict_name = batch_dict_name
 
+        if data_type == 'train':
+            self._file_list = [os.path.join(data_dir, 'data_batch_{}'.format(i)) for i in range(1, 6)]
+        else:
+            self._file_list = [os.path.join(data_dir, 'test_batch')]
+
         self.shuffle = shuffle
 
         self.setup(epoch_val=0, batch_size=1)
-        self._file_list = [os.path.join(data_dir, 'data_batch_' + str(batch_id)) for batch_id in range(1,6)]
+        # if not isinstance(batch_file_list, list):
+        #     batch_file_list = [batch_file_list]
+        # self._file_list = [os.path.join(data_dir, 'data_batch_' + str(batch_id)) for batch_id in batch_file_list]
 
         # self._load_files()
         self._num_image = self.size()
@@ -37,6 +51,10 @@ class CIFAR(RNGDataFlow):
         self._batch_file_id = -1
         self._image = []
         self._next_batch_file()
+
+        # self._comp_channel_mean()
+
+        print('Data Loaded! Size of data: {}'.format(self.size()))
 
     def _next_batch_file(self):
         if self._batch_file_id >= len(self._file_list) - 1:
@@ -58,6 +76,38 @@ class CIFAR(RNGDataFlow):
         self._image = self._image[idxs]
         self._label = self._label[idxs]
 
+    @property
+    def batch_step(self):
+        return int(self.size() * 1.0 / self._batch_size)
+
+    @property
+    def channel_mean(self):
+        if self._mean == None:
+            self._mean = self._comp_channel_mean()
+        return self._mean
+
+    def substract_mean(self, im_list):
+        """
+        Args:
+            im_list: [batch, h, w, c]
+        """
+        mean = self.channel_mean
+        for c_id in range(0, im_list.shape[-1]):
+            im_list[:,:, c_id] = im_list[:,:, c_id] - mean[c_id]
+        return im_list
+
+    def _comp_channel_mean(self):
+        im_list = []
+        for k in range(len(self._file_list)):
+            cur_im = unpickle(self._file_list[k])['image']
+            im_list.extend(cur_im)
+        im_list = np.array(im_list)
+
+        mean_list = []
+        for c_id in range(0, im_list.shape[-1]):
+            mean_list.append(np.mean(im_list[:,:,:,c_id]))
+        return mean_list
+
     def size(self):
         try:
             return self.data_size
@@ -70,7 +120,6 @@ class CIFAR(RNGDataFlow):
             return self.data_size
         
     def next_batch(self):
-        # TODO assume batch_size smaller than images in one file
         assert self._batch_size <= self.size(), \
           "batch_size {} cannot be larger than data size {}".\
            format(self._batch_size, self.size())
@@ -86,7 +135,8 @@ class CIFAR(RNGDataFlow):
             self._image_id = 0
             if self.shuffle:
                 self._suffle_files()
-
+        if self._substract:
+            batch_image = self.substract_mean(batch_image)
         return batch_image, batch_label
 
     def next_batch_dict(self):
@@ -109,7 +159,7 @@ def unpickle(file):
 
     image = np.stack((r,g,b),axis=-1)
 
-    return {'image': image, 'label': labels}
+    return {'image': image.astype(float), 'label': labels}
 
 if __name__ == '__main__':
     a = CIFAR('D:\\Qian\\GitHub\\workspace\\tensorflow-DCGAN\\cifar-10-python.tar\\')
