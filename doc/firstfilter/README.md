@@ -20,7 +20,6 @@ We can see some high-frequency grayscale features as well as some low-frequency 
 </p>
 
 ### Feature maps with ReLU (Randomly choose 100 feature maps to display)
-Each feature map is scale to [0, 1] for better visualization.
 
 - Input image
 <p align = 'left'>
