@@ -37,11 +37,19 @@ if __name__ == '__main__':
     #             'inception4d', 'inception4e', 'inception3a',
     #             'inception3b', 'inception5a', 'inception5b']
 
+    file_path = os.path.join(config.im_path, FLAGES.im)
+    assert os.path.isfile(file_path),\
+        'File does not exist! {}'.format(file_path)
+    im = scipy.misc.imread(file_path)
+
     model = BaseVGG19(config.vgg_path)
     vizmodel = DeconvBaseVGG19(config.vgg_path)
 
     feats = model.conv_layer['conv2_2']
+    vizmap = vizmodel.deconv_layer['deconv2_1']
 
-    # with tf.Session() as sess:
-    #     sess.run(tf.global_variables_initializer())
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
+        cur_feats = sess.run(feats, feed_dict={model.inputs: [im]})
+        cur_vizmap = sess.run(vizmap, feed_dict={model.inputs: cur_feats})
         

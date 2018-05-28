@@ -299,12 +299,14 @@ class BaseVGG19(BaseModel):
 
 class DeconvBaseVGG19(BaseVGG19):
     def __init__(self, pre_train_path):
-        self.input = tf.placeholder(tf.float32,
+        self.inputs = tf.placeholder(tf.float32,
                                     [None, None, None, 128],
                                     name='input')
-        self._create_model(self.input, pre_train_path)
+        self._create_model(self.inputs, pre_train_path)
 
     def _create_model(self, inputs, pre_train_path):
+        self.deconv_layer = {}
+
         data_dict = np.load(pre_train_path,
                             encoding='latin1').item()
 
@@ -315,5 +317,7 @@ class DeconvBaseVGG19(BaseVGG19):
                                          3,
                                          128,
                                          reuse=True,
-                                         stride=2,
-                                         name='conv2_1')
+                                         stride=1,
+                                         name='conv2_2')
+
+        self.deconv_layer['deconv2_1'] = deconv2_1
