@@ -9,6 +9,8 @@ import tensorflow as tf
 from tensorcv.models.layers import *
 from tensorcv.models.base import BaseModel
 
+import lib.nets.layers as L
+
 
 VGG_MEAN = [103.939, 116.779, 123.68]
 
@@ -238,7 +240,16 @@ class VGG19_FCN(VGG19):
 
 
 class BaseVGG19(BaseModel):
+    def __init__(self, pre_train_path, is_load=True):
+        self.inputs = tf.placeholder(tf.float32,
+                                     [None, None, None, 3],
+                                     name='input')
+
+        self._creat_vgg(self.inputs, pre_train_path, is_load=is_load)
+
     def _creat_vgg(self, inputs, pre_train_path, is_load=True):
+        self.conv_layer = {}
+
         VGG_MEAN = [103.939, 116.779, 123.68]
 
         red, green, blue = tf.split(axis=3, num_or_size_splits=3,
@@ -282,4 +293,27 @@ class BaseVGG19(BaseModel):
             conv5_3 = conv(conv5_2, 3, 512, 'conv5_3')
             conv5_4 = conv(conv5_3, 3, 512, 'conv5_4')
 
+        self.conv_layer['conv2_2'] = conv2_2
+
         return conv5_4
+
+class DeconvBaseVGG19(BaseVGG19):
+    def __init__(self, pre_train_path):
+        self.input = tf.placeholder(tf.float32,
+                                    [None, None, None, 128],
+                                    name='input')
+        self._create_model(self.input, pre_train_path)
+
+    def _create_model(self, inputs, pre_train_path):
+        data_dict = np.load(pre_train_path,
+                            encoding='latin1').item()
+
+        arg_scope = tf.contrib.framework.arg_scope
+        with arg_scope([L.transpose_conv], nl=tf.nn.relu,
+                       trainable=False, data_dict=data_dict):
+            deconv2_1 = L.transpose_conv(inputs,
+                                         3,
+                                         128,
+                                         reuse=True,
+                                         stride=2,
+                                         name='conv2_1')

@@ -11,3 +11,4 @@ save_path = '/Users/gq/tmp/viz/'
 
 # directory of pre-trained googlenet parameters
 googlenet_path = '/Users/gq/workspace/Dataset/pretrained/googlenet.npy'
+vgg_path = 'E://GITHUB//workspace//CNN//pretrained//vgg19.npy'
