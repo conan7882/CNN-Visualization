@@ -45,26 +45,52 @@ def inception_layer(inputs,
 
 class BaseGoogLeNet(BaseModel):
     def __init__(self, pre_train_path, is_load=True):
+        self.data_dict = {}
+        if is_load:
+            assert pre_train_path is not None
+            self.data_dict = np.load(pre_train_path,
+                                encoding='latin1').item()
+
         self.inputs = tf.placeholder(tf.float32,
                                      [None, None, None, 3],
                                      name='input')
 
-        self._creat_googlenet(self.inputs, pre_train_path, is_load=is_load)
+        
+        input_bgr = self._sub_mean(self.inputs)
+        self._creat_googlenet(input_bgr, self.data_dict)
+
+    def _sub_mean(self, inputs):
+        with tf.name_scope('input'):
+            input_im = inputs
+
+            # Convert RGB image to BGR image
+            red, green, blue = tf.split(axis=3,
+                                        num_or_size_splits=3,
+                                        value=input_im)
+
+            input_bgr = tf.concat(axis=3, values=[
+                blue - MEAN[0],
+                green - MEAN[1],
+                red - MEAN[2],
+            ])
+            return input_bgr
+
+    def get_feature_map(self, inputs, layer_key):
+        assert layer_key in self.conv_layer
+        with tf.variable_scope(tf.get_variable_scope()) as scope:
+            # print(tf.get_default_graph().get_name_scope())
+            scope.reuse_variables()
+            inputs = self._sub_mean(inputs)
+            self._creat_googlenet(inputs, self.data_dict)
+            return self.conv_layer[layer_key]
 
     def _creat_googlenet(self,
                          inputs,
-                         pre_train_path,
-                         is_load=True,
-                         trainable=True):
+                         data_dict,
+                         trainable=False):
         self.conv_layer = {}
 
-        data_dict = {}
-        if is_load:
-            data_dict = np.load(pre_train_path,
-                                encoding='latin1').item()
-
         arg_scope = tf.contrib.framework.arg_scope
-
         with arg_scope([conv], trainable=trainable,
                        data_dict=data_dict, nl=tf.nn.relu):
             conv1 = conv(inputs, 7, 64, name='conv1_7x7_s2', stride=2)
@@ -114,6 +140,8 @@ class BaseGoogLeNet(BaseModel):
             inception5b = inception_layer(
                 inception5a, 384, 192, 384, 48, 128, 128, name='inception_5b')
 
+            self.conv_layer['conv1_7x7_s2'] = conv1
+            self.conv_layer['conv2_3x3'] = conv2
             self.conv_layer['inception3a'] = inception3a
             self.conv_layer['inception3b'] = inception3b
             self.conv_layer['inception4a'] = inception4a

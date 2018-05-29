@@ -294,30 +294,174 @@ class BaseVGG19(BaseModel):
             conv5_4 = conv(conv5_3, 3, 512, 'conv5_4')
 
         self.conv_layer['conv2_2'] = conv2_2
+        self.conv_layer['conv3_4'] = conv3_4
 
-        return conv5_4
+        return conv5_4  
+
+def threshold_tensor(x, thr, thr_type):
+    cond = thr_type(x, tf.ones(tf.shape(x)) * thr)
+    out = tf.where(cond, x, tf.zeros(tf.shape(x)))
+
+    return out
 
 class DeconvBaseVGG19(BaseVGG19):
-    def __init__(self, pre_train_path):
-        self.inputs = tf.placeholder(tf.float32,
-                                    [None, None, None, 128],
-                                    name='input')
-        self._create_model(self.inputs, pre_train_path)
+    def __init__(self, pre_train_path, feat_key, pick_feat=None):
 
-    def _create_model(self, inputs, pre_train_path):
+        self.im = tf.placeholder(tf.float32,
+                                     [None, None, None, 3],
+                                     name='im')
+
+        self._creat_vgg(self.im, pre_train_path)
+
+        cur_feats = self.conv_layer[feat_key]
+        try:
+            self.max_act = tf.reduce_max(cur_feats[:, :, :, pick_feat])
+            feats = threshold_tensor(cur_feats, self.max_act, tf.equal)
+        except ValueError:
+        # else:
+            self.max_act = tf.reduce_max(cur_feats)
+            feats = threshold_tensor(cur_feats, self.max_act, tf.greater_equal)
+        self.feats = feats
+        
         self.deconv_layer = {}
+        self.deconv_layer['de{}'.format(feat_key)] = feats
+        self._create_model(pre_train_path)
+
+    def _creat_vgg(self, inputs, pre_train_path, is_load=True):
+        self.conv_layer = {}
+
+        VGG_MEAN = [103.939, 116.779, 123.68]
+
+        red, green, blue = tf.split(axis=3, num_or_size_splits=3,
+                                    value=inputs)
+        input_bgr = tf.concat(axis=3, values=[
+            blue - VGG_MEAN[0],
+            green - VGG_MEAN[1],
+            red - VGG_MEAN[2],
+        ])
+
+        data_dict = {}
+        if is_load:
+            data_dict = np.load(pre_train_path,
+                                encoding='latin1').item()
+
+        self.receptive_s = 1
+        self.stride_t = 1
+        self.receptive_size = {}
+        self.stride = {}
+        self.cur_input = input_bgr
+
+        def conv_layer(filter_size, out_dim, name):
+            self.conv_layer[name] = conv(self.cur_input, filter_size, out_dim, name)
+            self.receptive_s = self.receptive_s + (filter_size - 1) * self.stride_t
+            self.receptive_size[name] = self.receptive_s
+            self.stride[name] = self.stride_t
+            self.cur_input = self.conv_layer[name]
+
+        def pool_layer(name, switch=True, padding='SAME'):
+            self.conv_layer[name], self.conv_layer['switch_{}'.format(name)] =\
+                L.max_pool(self.cur_input, name, padding=padding, switch=switch)
+            self.receptive_s = self.receptive_s + self.stride_t
+            self.receptive_size[name] = self.receptive_s
+            self.stride_t = self.stride_t * 2
+            self.stride[name] = self.stride_t
+            self.cur_input = self.conv_layer[name]
+
+        arg_scope = tf.contrib.framework.arg_scope
+        with arg_scope([conv], nl=tf.nn.relu,
+                       trainable=False, data_dict=data_dict):
+
+            conv_layer(3, 64, 'conv1_1')
+            conv_layer(3, 64, 'conv1_2')
+            pool_layer('pool1')
+
+            conv_layer(3, 128, 'conv2_1')
+            conv_layer(3, 128, 'conv2_2')
+            pool_layer('pool2')
+
+            conv_layer(3, 256, 'conv3_1')
+            conv_layer(3, 256, 'conv3_2')
+            conv_layer(3, 256, 'conv3_3')
+            conv_layer(3, 256, 'conv3_4')
+            pool_layer('pool3')
+
+            conv_layer(3, 512, 'conv4_1')
+            conv_layer(3, 512, 'conv4_2')
+            conv_layer(3, 512, 'conv4_3')
+            conv_layer(3, 512, 'conv4_4')
+            pool_layer('pool4')
+
+            conv_layer(3, 512, 'conv5_1')
+            conv_layer(3, 512, 'conv5_2')
+            conv_layer(3, 512, 'conv5_3')
+            conv_layer(3, 512, 'conv5_4')
+
+    def _create_model(self, pre_train_path):
+        def deconv_block(input_key, output_key, n_feat, name):
+            try:
+                self.deconv_layer[output_key] =\
+                    L.transpose_conv(self.deconv_layer[input_key],
+                                     out_dim=n_feat,
+                                     name=name,
+                                    )
+            except KeyError:
+                pass
+
+        def unpool_block(input_key, output_key, switch_key, name):
+            try:
+                self.deconv_layer[output_key] =\
+                    L.unpool_2d(self.deconv_layer[input_key], 
+                                self.conv_layer[switch_key], 
+                                stride=[1, 2, 2, 1], 
+                                scope=name)
+            except KeyError:
+                pass
 
         data_dict = np.load(pre_train_path,
                             encoding='latin1').item()
 
         arg_scope = tf.contrib.framework.arg_scope
-        with arg_scope([L.transpose_conv], nl=tf.nn.relu,
-                       trainable=False, data_dict=data_dict):
-            deconv2_1 = L.transpose_conv(inputs,
-                                         3,
-                                         128,
-                                         reuse=True,
-                                         stride=1,
-                                         name='conv2_2')
+        with arg_scope([L.transpose_conv],
+                       filter_size=3,
+                       nl=tf.nn.relu,
+                       trainable=False,
+                       data_dict=data_dict,
+                       use_bias=False,
+                       stride=1,
+                       reuse=True):
 
-        self.deconv_layer['deconv2_1'] = deconv2_1
+            deconv_block('deconv5_4', 'deconv5_3', 512, 'conv5_4')
+            deconv_block('deconv5_3', 'deconv5_2', 512, 'conv5_3')
+            deconv_block('deconv5_2', 'deconv5_1', 512, 'conv5_2')
+            deconv_block('deconv5_1', 'depool4', 512, 'conv5_1')
+            unpool_block('depool4', 'deconv4_4', 'switch_pool4', 'unpool4')
+
+            deconv_block('deconv4_4', 'deconv4_3', 512, 'conv4_4')
+            deconv_block('deconv4_3', 'deconv4_2', 512, 'conv4_3')
+            deconv_block('deconv4_2', 'deconv4_1', 512, 'conv4_2')
+            deconv_block('deconv4_1', 'depool3', 256, 'conv4_1')
+            unpool_block('depool3', 'deconv3_4', 'switch_pool3', 'unpool3')
+
+            deconv_block('deconv3_4', 'deconv3_3', 256, 'conv3_4')
+            deconv_block('deconv3_3', 'deconv3_2', 256, 'conv3_3')
+            deconv_block('deconv3_2', 'deconv3_1', 256, 'conv3_2')
+            deconv_block('deconv3_1', 'depool2', 128, 'conv3_1')
+            unpool_block('depool2', 'deconv2_2', 'switch_pool2', 'unpool2')
+
+            deconv_block('deconv2_2', 'deconv2_1', 128, 'conv2_2')
+            deconv_block('deconv2_1', 'depool1', 64, 'conv2_1')
+            unpool_block('depool1', 'deconv1_2', 'switch_pool1', 'unpool1')
+            
+            deconv_block('deconv1_2', 'deconv1_1', 64, 'conv1_2')
+
+        self.deconv_layer['deconvim'] =\
+            L.transpose_conv(self.deconv_layer['deconv1_1'],
+                             3,
+                             3,
+                             trainable=False,
+                             data_dict=data_dict,
+                             reuse=True,
+                             use_bias=False,
+                             stride=1,
+                             name='conv1_1')
+
