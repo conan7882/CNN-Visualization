@@ -12,8 +12,7 @@ Visualizing and Understanding Convolutional Networks](https://arxiv.org/abs/1311
 
 ## Implementation Details
 
-- [VGG19](https://arxiv.org/abs/1409.1556) is used for visualization. The model is defined in [`CNN-Visualization/lib/nets/vgg.py`](../../lib/nets/vgg.py).
-- Deconvnet for VGG19 is defined in [`CNN-Visualization/lib/nets/vgg.py`](../../lib/nets/vgg.py).
+- Deconvnet for VGG19 is defined in [`CNN-Visualization/lib/nets/vgg.py`](https://github.com/conan7882/CNN-Visualization/blob/master/lib/nets/vgg.py#L307).
 - Code of example usage of deconvnet visulization is in [`CNN-Visualization/example/deconv.py`](../../example/deconv.py).
 - Images are rescale to proper size to git rid of size inconsistence issues when unpooling.
 - Feature maps are first computed for a single image. Then pick one activation and set all other activations in the selected feature map to zero. Finally this new feature map is mapped back to input pixel space.
@@ -107,8 +106,8 @@ Layer 4_4, Feature map 171, Dog (This feature map is sensitive on the dog nose.)
 </p>
 Layer 4_4, Feature map 171, People (This is the same feature map as the above figure but on 'people' images. Besides nose on dog faces, this feature map is also sensitive to some parts of human faces, such as eyes and month.)
 <p align = 'left'>
-<img src ="figs/People/conv4_4_feat_171.png" height="220" />
-<img src ="figs/People/conv4_4_im_171.png" height="220" />
+<img src ="figs/people/conv4_4_feat_171.png" height="220" />
+<img src ="figs/people/conv4_4_im_171.png" height="220" />
 </p>
 
 
@@ -138,7 +137,7 @@ python deconv.py --feat conv4_4 --imtype .jpg
 ```	
 
 - All the test images will be rescaled to 224 x 224 before feed into VGG19.
-- `--feat` is used to specify the feature layer. It can be `conv1_1`, `conv2_1` ...
+- `--feat` is used to specify the name of feature layer. It can be `conv1_1`, `conv2_1` ... The fill list can be found [here](https://github.com/conan7882/CNN-Visualization/blob/master/lib/nets/vgg.py#L374).
 - `--imtype` is used to specify the test image type. It can be .jpg or .png or other types of images.
 - The cropped and merged reconstruction and original images are saved `save_path` as
 **LAYER_NAME_feat.png** 
@@ -154,13 +153,3 @@ python deconv.py --feat conv4_4 --imtype .jpg --id 350
 
 ## Author
 Qian Ge
-
-
-	
-	
-
-
-
-
-
- 
