@@ -2,7 +2,7 @@
 
 - TensorFlow implementation of [
 Visualizing and Understanding Convolutional Networks](https://arxiv.org/abs/1311.2901) (ECCV'14).
-- The features are visulized by mapping activations back to the input pixel space through several unpooling layers and deconvolutional layers (transposed convolutional layers).
+- The features are visualized by mapping activations back to the input pixel space through several unpooling layers and deconvolutional layers (transposed convolutional layers).
 - This implementation takes [VGG19](https://arxiv.org/abs/1409.1556) as example. 
 
 ## Requirements
@@ -13,11 +13,11 @@ Visualizing and Understanding Convolutional Networks](https://arxiv.org/abs/1311
 ## Implementation Details
 
 - Deconvnet for VGG19 is defined in [`CNN-Visualization/lib/nets/vgg.py`](https://github.com/conan7882/CNN-Visualization/blob/master/lib/nets/vgg.py#L307).
-- Code of example usage of deconvnet visulization is in [`CNN-Visualization/example/deconv.py`](../../example/deconv.py).
+- Code of example usage of deconvnet visualization is in [`CNN-Visualization/example/deconv.py`](../../example/deconv.py).
 - Images are rescale to proper size to git rid of size inconsistence issues when unpooling.
 - Feature maps are first computed for a single image. Then pick one activation and set all other activations in the selected feature map to zero. Finally this new feature map is mapped back to input pixel space.
-- Weights of filters of convnet and deconvnet are shared. The filters of the deconvnet is the transpose version of convnet fitlers.
-- Swithes are stored during forword pass. Reference of implementation of unpooling layer is [here](https://github.com/tensorflow/tensorflow/issues/2169).
+- Weights of filters of convnet and deconvnet are shared. The filters of the deconvnet is the transpose version of convnet filters.
+- Switches are stored during forward pass. Reference of implementation of unpooling layer is [here](https://github.com/tensorflow/tensorflow/issues/2169).
 
 
 ## Results
