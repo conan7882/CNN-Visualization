@@ -15,10 +15,10 @@
 ## Algorithms 
 
 - [Visulization of filters and feature maps of GoogLeNet](https://github.com/conan7882/CNN-Visualization/tree/master/doc/firstfilter#visualization-of-filters-and-feature-maps-of-googlenet)
-- [Gradient-weighted Class Activation Mapping (Grad-CAM)](https://github.com/conan7882/CNN-Visualization/tree/master/doc/grad_cam#gradient-weighted-class-activation-mapping-grad-cam) (ICCV'17)
-- [Class Activation Mapping (CAM)](https://github.com/conan7882/CNN-Visualization/tree/master/doc/cam#class-activation-mapping-cam) (CVPR'16)
-- [Guided back propagation](https://github.com/conan7882/CNN-Visualization/tree/master/doc/guided_backpropagation#guided-backpropagation) (2014)
 - [Deconvolutional Networks](https://github.com/conan7882/CNN-Visualization/blob/master/doc/deconv/README.md#cnn-feature-visuallization-via-deconvnet-transposed-convolutional-layers) (ECCV'14)
+- [Guided back propagation](https://github.com/conan7882/CNN-Visualization/tree/master/doc/guided_backpropagation#guided-backpropagation) (2014)
+- [Class Activation Mapping (CAM)](https://github.com/conan7882/CNN-Visualization/tree/master/doc/cam#class-activation-mapping-cam) (CVPR'16)
+- [Gradient-weighted Class Activation Mapping (Grad-CAM)](https://github.com/conan7882/CNN-Visualization/tree/master/doc/grad_cam#gradient-weighted-class-activation-mapping-grad-cam) (ICCV'17)
 
 ## Visulization of filters and feature maps of GoogLeNet
 - The most straightforward approach to visualize a CNN is to show the feature maps (activations) and filters.
@@ -27,26 +27,6 @@
 <img src ="doc/firstfilter/figs/GoogLeNet.png" height="250" />
 <img src ="doc/firstfilter/figs/GoogLeNet_inception3a.png" height="250" />
 </p>
-
-## Gradient-weighted Class Activation Mapping (Grad-CAM)
-- Grad-CAM generates similar class heatmap as CAM, but it does not require to re-train the model for visualizatin.
-- Details of the implementation and more results can be found [here](https://github.com/conan7882/CNN-Visualization/tree/master/doc/grad_cam#gradient-weighted-class-activation-mapping-grad-cam). Some results:
-
-![grad-cam-result](doc/grad_cam/figs/ex1.png)
-
-## Class Activation Mapping (CAM)
-- The class activation map highlights the most informative image regions relevant to the predicted class. This map can be obtained by adding a global average pooling layer at the end of convolutional layers.
-- Details of the implementation and more results can be found [here](https://github.com/conan7882/CNN-Visualization/tree/master/doc/cam#class-activation-mapping-cam). Some results:
-
-![celtech_change](doc/cam/figs/celtech_diff.png)
-
-
-## Guided back propagation
-<!--- Guided backpropagation generates clearer visulizations than deconvnet for higher layers.-->
-
-- Details of the implementation and more results can be found [here](https://github.com/conan7882/CNN-Visualization/tree/master/doc/guided_backpropagation#guided-backpropagation). Some results:
-
-![gbp](doc/guided_backpropagation/figs/gbp.png)
 
 ## Deconvnet
 - Pick a specific activation on a feature map and set other activation to zeros, then reconstruct an image by mapping back this new feature map to input pixel space.
@@ -62,6 +42,32 @@
 <img src ="doc/deconv/figs/people/conv4_4_feat.png" height="200" />
 <img src ="doc/deconv/figs/people/conv4_4_im.png" height="200" />
 </p>
+
+## Guided back propagation
+<!--- Guided backpropagation generates clearer visulizations than deconvnet for higher layers.-->
+
+- Details of the implementation and more results can be found [here](https://github.com/conan7882/CNN-Visualization/tree/master/doc/guided_backpropagation#guided-backpropagation). Some results:
+
+![gbp](doc/guided_backpropagation/figs/gbp.png)
+
+## Class Activation Mapping (CAM)
+- The class activation map highlights the most informative image regions relevant to the predicted class. This map can be obtained by adding a global average pooling layer at the end of convolutional layers.
+- Details of the implementation and more results can be found [here](https://github.com/conan7882/CNN-Visualization/tree/master/doc/cam#class-activation-mapping-cam). Some results:
+
+![celtech_change](doc/cam/figs/celtech_diff.png)
+
+## Gradient-weighted Class Activation Mapping (Grad-CAM)
+- Grad-CAM generates similar class heatmap as CAM, but it does not require to re-train the model for visualizatin.
+- Details of the implementation and more results can be found [here](https://github.com/conan7882/CNN-Visualization/tree/master/doc/grad_cam#gradient-weighted-class-activation-mapping-grad-cam). Some results:
+
+![grad-cam-result](doc/grad_cam/figs/ex1.png)
+
+
+
+
+
+
+
 
 
 
