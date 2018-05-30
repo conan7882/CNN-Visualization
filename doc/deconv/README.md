@@ -1,8 +1,8 @@
-# CNN Feature Visuallization via Deconvnet (Transposed Convolutional Layers)
+# CNN Feature Visuallization via Deconvnet
 
 - TensorFlow implementation of [
 Visualizing and Understanding Convolutional Networks](https://arxiv.org/abs/1311.2901) (ECCV'14).
-- The features are visualized by mapping activations back to the input pixel space through several unpooling layers and deconvolutional layers (transposed convolutional layers).
+- The features are visualized by mapping activations back to the input pixel space through several unpooling layers and deconvolutional layers.
 - This implementation takes [VGG19](https://arxiv.org/abs/1409.1556) as example. 
 
 ## Requirements
