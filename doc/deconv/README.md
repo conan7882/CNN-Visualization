@@ -12,7 +12,7 @@ Visualizing and Understanding Convolutional Networks](https://arxiv.org/abs/1311
 
 ## Implementation Details
 
-- Deconvnet for VGG19 is defined in [`CNN-Visualization/lib/nets/vgg.py`](https://github.com/conan7882/CNN-Visualization/blob/master/lib/nets/vgg.py#L307).
+- Deconvnet for VGG19 is defined in [`CNN-Visualization/lib/nets/vgg.py`](https://github.com/conan7882/CNN-Visualization/blob/master/lib/nets/vgg.py#L325).
 - Code of example usage of deconvnet visualization is in [`CNN-Visualization/example/deconv.py`](../../example/deconv.py).
 - Images are rescale to proper size to git rid of size inconsistence issues when unpooling.
 - Feature maps are first computed for a single image. Then pick one activation and set all other activations in the selected feature map to zero. Finally this new feature map is mapped back to input pixel space.
