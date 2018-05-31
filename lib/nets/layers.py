@@ -181,7 +181,7 @@ def max_pool(x,
             ksize=filter_shape, 
             strides=stride, 
             padding=padding,
-            name=name)
+            name=name), None
 
 
 
