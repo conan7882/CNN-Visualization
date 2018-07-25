@@ -123,7 +123,7 @@ Layer 4_4, Feature map 171, People (This is the same feature map as the above fi
    
 2. Download the pre-trained VGG parameters
        
-    - Download pre-trained VGG19 model [here](https://github.com/machrisaa/tensorflow-vgg#tensorflow-vgg16-and-vgg19) and put it in `vgg_path`.
+    - Download pre-trained VGG19 model [here](https://www.dropbox.com/sh/dad57t3hl60jeb0/AADlcUshCnmN2bAZdgdkmxDna?dl=0). This is original downloaded from [here](https://github.com/machrisaa/tensorflow-vgg#tensorflow-vgg16-and-vgg19). Put it in `vgg_path`.
          
          
 ## Run Script:
