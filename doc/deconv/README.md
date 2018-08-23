@@ -15,7 +15,7 @@ Visualizing and Understanding Convolutional Networks](https://arxiv.org/abs/1311
 - Deconvnet for VGG19 is defined in [`CNN-Visualization/lib/nets/vgg.py`](https://github.com/conan7882/CNN-Visualization/blob/master/lib/nets/vgg.py#L325).
 - Code of example usage of deconvnet visualization is in [`CNN-Visualization/example/deconv.py`](../../example/deconv.py).
 - Images are rescale to proper size to git rid of size inconsistence issues when unpooling.
-- Feature maps are first computed for a single image. Then pick one activation and set all other activations in the selected feature map to be zero. Finally this new feature map is mapped back to input pixel space.
+- Feature maps for each level of CNN are first computed for a single image. Then pick one activation at a certain level and set all other activations at this level to be zero. Finally this new feature map of this level is mapped back to the input pixel space.
 - Weights of filters of convnet and deconvnet are shared. The filters of the deconvnet is the transpose version of convnet filters.
 - Switches are stored during forward pass. Reference of implementation of unpooling layer is [here](https://github.com/tensorflow/tensorflow/issues/2169).
 
