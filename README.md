@@ -1,7 +1,9 @@
 # Visualization of Deep Covolutional Neural Networks
 
+<!---
 [![Build Status](https://travis-ci.org/conan7882/CNN-Visualization.svg?branch=master)](https://travis-ci.org/conan7882/CNN-Visualization)
 [![Coverage Status](https://coveralls.io/repos/github/conan7882/CNN-Visualization/badge.svg?branch=master)](https://coveralls.io/github/conan7882/CNN-Visualization?branch=master)
+-->
 
 - This repository contains implementations of visualizatin of CNN in recent papers.
 - The source code in the repository can be used to demostrate the algorithms as well as test on your own data.
