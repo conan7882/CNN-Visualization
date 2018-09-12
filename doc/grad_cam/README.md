@@ -24,7 +24,7 @@ Left to right: Original Image, Grad-CAM, Guided Grad-CAM, Grad-CAM, Guided Grad-
 ![ex1](figs/ex1.png)
 ![ex2](figs/ex2.png)
 
-Compare with CAM using the same images (Caltech-256) (CAM result can be found [here](https://github.com/conan7882/CNN-Visualization/tree/master/class_activation_map#caltech-256)):
+Compare with CAM using the same images (Caltech-256) (CAM result can be found [here](https://github.com/conan7882/CNN-Visualization/tree/master/doc/cam#caltech-256)):
 **ImageNet1000 does not have class 'top hat', so class 'cowboy hat' is used here which gets relatively bad performance to find the hat. Also note that, the pre-trained VGG19 is not trained on Caltech-256.**
 
 ![compare](figs/comparecam.png)
